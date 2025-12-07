@@ -1,0 +1,40 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-celebration",
+      "description": "A group of elegantly dressed people toasting with champagne glasses at a luxurious New Year's Eve party.",
+      "imageUrl": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjZWxlYnJhdGlvbiUyMHBhcnR5fGVufDB8fHx8MTc2NDY5NTgyMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "celebration party"
+    },
+    {
+      "id": "venue-interior",
+      "description": "The lavish interior of a concert hall with rows of empty seats.",
+      "imageUrl": "https://images.unsplash.com/photo-1759230766134-e3ff1c27d20e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dGhlYXRlciUyMGludGVyaW9yfGVufDB8fHx8MTc2NDQxMTAwOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "theater interior"
+    },
+    {
+      "id": "gallery-people-dancing",
+      "description": "Guests enjoying an elegant evening at the gala.",
+      "imageUrl": "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxZc3R5bGlzaCUyMHBhcnR5fGVufDB8fHx8MTc2NDU5OTY1MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "elegant party guests"
+    },
+    {
+      "id": "gallery-champagne",
+      "description": "Close-up of champagne glasses being toasted at a party.",
+      "imageUrl": "https://images.unsplash.com/photo-1610372081132-3dfbb6db5aea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Y2hhbXBhZ25lJTIwdG9hc3R8ZW58MHx8fHwxNzY0NTQ1MzM5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "champagne toast"
+    },
+    {
+      "id": "gallery-dj",
+      "description": "DJ performing on a vibrant stage with laser lights.",
+      "imageUrl": "https://images.unsplash.com/photo-1546013845-e7f90a063a1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkaiUyMHN0YWdlfGVufDB8fHx8MTc2NDU5OTY1MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj stage"
+    },
+    {
+      "id": "gallery-gala-fashion",
+      "description": "A couple dressed in high fashion for a gala event.",
+      "imageUrl": "https://images.unsplash.com/photo-1763152608881-67c80e52d0fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxnYWxhJTIwZmFzaGlvbnxlbnwwfHx8fDE3NjQ1OTk2NTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gala fashion"
+    }
+  ]
+}
