@@ -4,16 +4,15 @@ import { Toaster } from '@/components/ui/toaster';
 import { SiteHeader } from '@/components/layout/site-header';
 import { cn } from '@/lib/utils';
 import { i18n } from '@/i18n-config';
-import { Cinzel_Decorative, Lato } from 'next/font/google';
-import Image from 'next/image';
+import { Playfair_Display, Montserrat } from 'next/font/google';
 
-const cinzel = Cinzel_Decorative({
+const playfair = Playfair_Display({
   subsets: ['latin'],
   weight: ['400', '700', '900'],
   variable: '--font-headline',
 });
 
-const lato = Lato({
+const montserrat = Montserrat({
   subsets: ['latin'],
   weight: ['100', '300', '400', '700', '900'],
   variable: '--font-body',
@@ -41,8 +40,8 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-body antialiased',
-          lato.variable,
-          cinzel.variable
+          montserrat.variable,
+          playfair.variable
         )}
       >
         <div className="fixed inset-0 -z-10 h-full w-full bg-background">

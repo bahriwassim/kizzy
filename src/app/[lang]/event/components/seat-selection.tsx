@@ -8,10 +8,12 @@ import { Ticket, X, ChevronLeft, Check, ArrowRight, Martini, Armchair } from 'lu
 import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { TableIcon } from '@/components/ui/table-icon';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { type Locale } from '@/i18n-config';
+import Image from 'next/image';
 
 type SeatStatus = 'available' | 'unavailable' | 'selected';
-type SeatTier = 'STANDARD' | 'PREMIUM' | 'VIP' | 'PLATINIUM' | 'ULTRA VIP' | 'PRESTIGE';
+type SeatTier = 'PREMIUM' | 'VIP' | 'PLATINIUM' | 'ULTRA VIP' | 'PRESTIGE';
 
 interface Seat {
   id: string;
@@ -23,7 +25,6 @@ interface Seat {
 }
 
 const tierColors: Record<SeatTier, string> = {
-    'STANDARD': 'border-pink-500 text-pink-500',
     'PREMIUM': 'border-blue-500 text-blue-500',
     'VIP': 'border-gray-400 text-gray-400',
     'PLATINIUM': 'border-green-500 text-green-500',
@@ -38,7 +39,6 @@ const generateSeats = (): Seat[] => {
     { tier: 'PLATINIUM', price: 1000, capacity: 4, labels: ['6', '7', '8', '9', '10', '11', '12', '13', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '1', '2', '3', '4', '5', '37', '38', '39', '40'] },
     { tier: 'VIP', price: 800, capacity: 4, labels: ['41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73'] },
     { tier: 'PREMIUM', price: 500, capacity: 4, labels: ['74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95', '96', '97', '98', '99', '100', '101', '102'] },
-    { tier: 'STANDARD', price: 300, capacity: 4, labels: ['103', '104', '105', '106', '107', '108', '109'] }
   ];
 
   for (const section of sections) {
@@ -228,6 +228,20 @@ export function SeatSelection({ lang }: { lang: Locale }) {
     }
     setSeats(newSeats);
   };
+
+  const handleTierChange = (tier: SeatTier, delta: number) => {
+    if (delta > 0) {
+      const seatToSelect = seats.find(s => s.tier === tier && s.status === 'available');
+      if (seatToSelect) {
+        handleSeatClick(seatToSelect.id);
+      }
+    } else {
+      const seatToDeselect = [...selectedSeats].reverse().find(s => s.tier === tier);
+      if (seatToDeselect) {
+        handleSeatClick(seatToDeselect.id);
+      }
+    }
+  };
   
   const handleSimpleEntryChange = (type: 'men' | 'women', count: number) => {
     const newCount = Math.max(0, count);
@@ -386,7 +400,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
               <CardContent className="flex items-center gap-6 justify-center pb-8">
                 <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-blue-500/30 hover:bg-blue-500/10" onClick={() => handleSimpleEntryChange('men', simpleEntries.men - 1)}>-</Button>
                 <span className="text-4xl font-bold w-16 text-center tabular-nums text-blue-500">{simpleEntries.men}</span>
-                <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-blue-500/30 hover:bg-blue-500/10" onClick={() => handleSimpleEntryChange('men', simpleEntries.men + 1)}>+</Button>
+                <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-blue-500/30 hover:bg-blue-500/10" onClick={() => handleSimpleEntryChange('men', simpleEntries.men - 1)}>+</Button>
               </CardContent>
             </Card>
           </CardContent>
@@ -394,131 +408,78 @@ export function SeatSelection({ lang }: { lang: Locale }) {
       );
     }
 
+    const tiers: SeatTier[] = ['PREMIUM', 'VIP', 'PLATINIUM', 'ULTRA VIP'];
+
     return (
       <Card className="border-accent/20 bg-accent/5 animate-in slide-in-from-right-8 duration-500 overflow-hidden">
         <CardHeader className="bg-accent/10 border-b border-accent/10">
            <CardTitle className="text-xl md:text-2xl text-accent">{pageContent.tableReservation}</CardTitle>
            <CardDescription className="text-accent/80">{pageContent.tableReservationDescription}</CardDescription>
         </CardHeader>
-        <CardContent className="p-0 md:p-4 bg-[#0a0a0a] relative">
-           {/* Scroll Hint Overlay (Mobile) */}
-           <div className="md:hidden absolute top-4 right-4 z-20 pointer-events-none animate-pulse">
-               <div className="bg-black/60 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-2 shadow-xl">
-                   <ArrowRight className="w-3 h-3" /> {pageContent.scrollHint}
-               </div>
+        <CardContent className="p-4 md:p-6 bg-[#0a0a0a]">
+           {/* Plan Image */}
+           <div className="relative w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black">
+              <Image 
+                src="/plan.jpeg" 
+                alt="Floor Plan" 
+                fill 
+                className="object-contain"
+              />
            </div>
 
-           <div className="w-full overflow-x-auto touch-pan-x pb-24 md:pb-4">
-              <div className="min-w-[700px] md:min-w-[800px] relative p-4 md:p-8 flex flex-col items-center gap-6 select-none mx-auto">
+           {/* Tier Selection */}
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tiers.map(tier => {
+                 const sampleSeat = seats.find(s => s.tier === tier);
+                 if (!sampleSeat) return null;
+
+                 const availableCount = seats.filter(s => s.tier === tier && s.status === 'available').length;
+                 const selectedCount = selectedSeats.filter(s => s.tier === tier).length;
                  
-                 <div className="relative z-10 w-full max-w-4xl">
-                    {/* Top Section */}
-                    <div className="flex justify-between items-start gap-4 mb-8">
-                        {/* Bar */}
-                        <div className="w-10 h-64 bg-zinc-800/80 rounded-r-xl border-y border-r border-white/10 flex items-center justify-center shadow-lg backdrop-blur-sm">
-                            <div className="font-headline text-xs tracking-[0.4em] -rotate-90 text-zinc-500 whitespace-nowrap">{pageContent.bar}</div>
+                 return (
+                    <div key={tier} className={cn(
+                        "p-4 rounded-xl border transition-all duration-200 flex flex-col justify-between",
+                        selectedCount > 0 ? "bg-accent/10 border-accent shadow-[0_0_15px_rgba(255,215,0,0.1)]" : "bg-white/5 border-white/10 hover:border-white/20"
+                    )}>
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 className={cn("font-headline text-lg tracking-wider", tierColors[tier])}>{tier}</h3>
+                                <p className="text-sm text-muted-foreground">{sampleSeat.capacity} pers. / Table</p>
+                            </div>
+                            <div className="text-right">
+                                <div className="font-bold text-xl">{sampleSeat.price}€</div>
+                            </div>
                         </div>
-
-                        {/* Premium Grid */}
-                        <div className="flex-1 flex justify-center">
-                            <div className="p-4 rounded-2xl border border-blue-500/20 bg-blue-900/10 backdrop-blur-sm">
-                                <h3 className={cn("font-headline text-xs text-center mb-3 tracking-widest", tierColors['PREMIUM'])}>PREMIUM</h3>
-                                <div className="flex flex-col gap-4">
-                                    {/* Row 1 */}
-                                    <div className="flex justify-center gap-2 md:gap-3 flex-wrap">
-                                        {['101', '100', '102', '99'].map(renderSeat)}
-                                        {['96', '97'].map(renderSeat)}
-                                        {['95', '94', '93'].map(renderSeat)}
-                                        {['90', '88', '87', '91', '92'].map(renderSeat)}
-                                    </div>
-                                    {/* Row 2 */}
-                                    <div className="flex justify-center gap-2 md:gap-3 flex-wrap">
-                                        {['89', '86', '84', '83'].map(renderSeat)}
-                                        {['85', '81', '82'].map(renderSeat)}
-                                        {['80', '79', '78', '77', '76', '75', '74'].map(renderSeat)}
-                                    </div>
-                                </div>
+                        
+                        <div className="flex items-center justify-between mt-4">
+                            <span className="text-xs text-muted-foreground">
+                                {availableCount === 0 && selectedCount === 0 ? pageContent.unavailable : `${availableCount} ${pageContent.available}`}
+                            </span>
+                            <div className="flex items-center gap-3">
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="h-8 w-8 rounded-full border-white/20 hover:bg-white/10"
+                                    onClick={() => handleTierChange(tier, -1)}
+                                    disabled={selectedCount === 0}
+                                >
+                                    -
+                                </Button>
+                                <span className="font-bold w-6 text-center text-lg">{selectedCount}</span>
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="h-8 w-8 rounded-full border-white/20 hover:bg-white/10"
+                                    onClick={() => handleTierChange(tier, 1)}
+                                    disabled={availableCount === 0}
+                                >
+                                    +
+                                </Button>
                             </div>
                         </div>
                     </div>
-
-                    {/* Middle Section: VIP */}
-                    <div className="mb-8 p-4 rounded-2xl border border-gray-500/20 bg-gray-900/10 backdrop-blur-sm">
-                        <h3 className={cn("font-headline text-sm text-center mb-4 tracking-widest", tierColors['VIP'])}>VIP</h3>
-                        <div className="flex justify-center flex-wrap gap-4 md:gap-6">
-                            <div className="flex gap-1"> {['41', '42'].map(renderSeat)} <div className="w-4 md:w-6"></div> {['43', '44'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['47', '48'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['46'].map(renderSeat)} <div className="w-4 md:w-6"></div> {['45', '49', '50'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['51', '52'].map(renderSeat)} <div className="w-4 md:w-6"></div> {['53', '54'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['56', '55'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['58', '57'].map(renderSeat)} <div className="w-4 md:w-6"></div> {['60', '61'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['59', '62'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['63', '65'].map(renderSeat)} <div className="w-4 md:w-6"></div> {['64'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['67', '66'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['73', '72'].map(renderSeat)} <div className="w-4 md:w-6"></div> {['71', '70'].map(renderSeat)} </div>
-                            <div className="flex gap-1"> {['68', '69'].map(renderSeat)} </div>
-                        </div>
-                    </div>
-
-                    {/* Bottom Section: High Tiers */}
-                    <div className="flex justify-center items-end gap-2 md:gap-6 mb-8 w-full">
-                        {/* PLATINUM LEFT */}
-                        <div className="flex flex-col items-center p-2 rounded-xl border border-green-500/20 bg-green-900/10">
-                            <h3 className={cn("font-headline text-[10px] md:text-xs text-center mb-2 tracking-widest", tierColors['PLATINIUM'])}>PLATINIUM</h3>
-                            <div className="flex flex-col gap-2 items-center">
-                                <div className="flex gap-2"> {['35', '36'].map(renderSeat)} </div>
-                                <div className="flex gap-2"> {['34', '33', '26'].map(renderSeat)} </div>
-                                <div className="flex gap-2"> {['31', '32'].map(renderSeat)} </div>
-                                <div className="flex gap-2"> {['30', '29', '28'].map(renderSeat)} </div>
-                            </div>
-                        </div>
-
-                        {/* ULTRA VIP CENTER */}
-                        <div className="flex flex-col items-center p-2 rounded-xl border border-yellow-500/20 bg-yellow-900/10 flex-grow max-w-lg">
-                             <h3 className={cn("font-headline text-[10px] md:text-xs text-center mb-2 tracking-widest", tierColors['ULTRA VIP'])}>ULTRA VIP</h3>
-                             <div className="flex flex-col items-center gap-2 w-full">
-                                <div className="flex justify-between w-full px-4"> {['25', '14'].map(renderSeat)} </div>
-                                <div className="flex justify-center gap-2"> {['24', '20', '19', '15'].map(renderSeat)} </div>
-                                <div className="flex justify-center gap-2"> {['23', '22', '21', '18', '17', '16'].map(renderSeat)} </div>
-                             </div>
-                        </div>
-
-                        {/* PLATINUM RIGHT */}
-                        <div className="flex flex-col items-center p-2 rounded-xl border border-green-500/20 bg-green-900/10">
-                            <h3 className={cn("font-headline text-[10px] md:text-xs text-center mb-2 tracking-widest", tierColors['PLATINIUM'])}>PLATINIUM</h3>
-                            <div className="flex flex-col gap-2 items-center">
-                                <div className="flex gap-2"> {['13', '6'].map(renderSeat)} </div>
-                                <div className="flex gap-2"> {['12', '7'].map(renderSeat)} </div>
-                                <div className="flex gap-2"> {['11', '10', '9', '8'].map(renderSeat)} </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* DJ Booth */}
-                    <div className="flex justify-center mt-8">
-                        <div className="w-1/2 h-16 bg-gradient-to-t from-zinc-800 to-zinc-700 rounded-t-3xl flex items-center justify-center border-t border-white/10 shadow-[0_-10px_30px_-5px_rgba(255,255,255,0.1)]">
-                            <span className="text-white/50 font-bold text-lg font-headline">{pageContent.djDesk}</span>
-                        </div>
-                    </div>
-                 </div>
-              </div>
-           </div>
-           
-           {/* Legend */}
-           <div className="p-4 bg-background/50 border-t border-white/5 backdrop-blur-sm">
-                <div className="flex flex-wrap justify-center gap-4 mb-4 text-xs">
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm border border-white/30 bg-white/10"></div> {pageContent.available}</div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-accent border border-accent shadow-[0_0_8px_rgba(255,215,0,0.5)]"></div> {pageContent.selected}</div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-muted border border-muted opacity-50"></div> {pageContent.unavailable}</div>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {pageContent.packsLegendItems.map((item: { tier: SeatTier; text: string }) => (
-                      <div key={`legend-${item.tier}`} className="flex items-center gap-2 text-[10px] md:text-xs text-muted-foreground bg-black/20 px-2 py-1 rounded">
-                        <div className={cn("w-2 h-2 rounded-full", tierColors[item.tier])}></div>
-                        <span>{item.text}</span>
-                      </div>
-                    ))}
-                </div>
+                 )
+              })}
            </div>
         </CardContent>
       </Card>
