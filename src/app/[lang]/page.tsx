@@ -31,14 +31,24 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
     <main className="flex min-h-screen flex-col">
       {/* Hero Section - Immersive & Modern */}
       <section className="relative h-screen w-full overflow-hidden">
-        <Image
-          src={heroImageUrl}
-          alt="Event flier"
-          fill
-          className="object-cover object-center animate-slow-zoom"
-          priority
-        />
-        {/* Gradient Overlay for better text readability */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <iframe
+            className="absolute"
+            src="https://www.youtube.com/embed/vwHpVAov4A4?autoplay=1&mute=1&controls=0&loop=1&playlist=vwHpVAov4A4&modestbranding=1&rel=0&playsinline=1"
+            title="KIZZY EVENT - Gatsby new years eve 2023"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+            style={{
+              width: '100vw',
+              height: '56.25vw',
+              minWidth: '177.78vh',
+              minHeight: '100vh',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-black/10" />
         
         <div className="absolute inset-0 flex flex-col justify-end pb-24 md:pb-32 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
@@ -67,6 +77,8 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
                 </Link>
               </Button>
             </div>
+
+            
           </div>
         </div>
       </section>

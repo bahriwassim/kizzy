@@ -2,6 +2,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Languages, PartyPopper } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
@@ -58,17 +59,28 @@ export function SiteHeader() {
         <div className="flex items-center justify-end space-x-2 md:space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="sm" className="gap-2 px-3">
                   <Languages className="h-5 w-5" />
+                  {lang === 'fr' ? (
+                    <Image src="https://flagcdn.com/w20/fr.png" alt="FR" width={20} height={14} />
+                  ) : (
+                    <Image src="https://flagcdn.com/w20/gb.png" alt="EN" width={20} height={14} />
+                  )}
                   <span className="sr-only">Changer la langue</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href={redirectedPathName('fr')}>Français</Link>
+                  <Link href={redirectedPathName('fr')} className="flex items-center gap-2">
+                    <Image src="https://flagcdn.com/w20/fr.png" alt="FR" width={20} height={14} />
+                    Français
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={redirectedPathName('en')}>English</Link>
+                  <Link href={redirectedPathName('en')} className="flex items-center gap-2">
+                    <Image src="https://flagcdn.com/w20/gb.png" alt="EN" width={20} height={14} />
+                    English
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

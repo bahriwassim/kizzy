@@ -11,6 +11,7 @@ import { TableIcon } from '@/components/ui/table-icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { type Locale } from '@/i18n-config';
 import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type SeatStatus = 'available' | 'unavailable' | 'selected';
 type SeatTier = 'PREMIUM' | 'VIP' | 'PLATINIUM' | 'ULTRA VIP' | 'PRESTIGE';
@@ -193,6 +194,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   const [simpleEntries, setSimpleEntries] = useState({ men: 0, women: 0 });
   const [selectedBottles, setSelectedBottles] = useState<Record<string, number>>({});
   const [onSiteBottles, setOnSiteBottles] = useState(0);
+  const [onSiteAll, setOnSiteAll] = useState(false);
   const router = useRouter();
 
   const pageContent = content[lang] || content['fr'];
@@ -201,6 +203,14 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
+
+  useEffect(() => {
+    if (onSiteAll) {
+      const max = selectedSeats.length;
+      setSelectedBottles({});
+      setOnSiteBottles(max);
+    }
+  }, [selectedSeats, onSiteAll]);
 
   const handleSeatClick = (seatId: string) => {
     const newSeats = [...seats];
@@ -249,6 +259,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   }
 
   const handleBottleChange = (bottleId: string, delta: number) => {
+    if (onSiteAll) return;
     const current = selectedBottles[bottleId] || 0;
     const totalSpecific = Object.values(selectedBottles).reduce((a, b) => a + b, 0);
     const total = totalSpecific + onSiteBottles;
@@ -261,6 +272,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   };
 
   const handleOnSiteBottleChange = (delta: number) => {
+    if (onSiteAll) return;
     const totalSpecific = Object.values(selectedBottles).reduce((a, b) => a + b, 0);
     const total = totalSpecific + onSiteBottles;
     const max = selectedSeats.length;
@@ -400,7 +412,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
               <CardContent className="flex items-center gap-6 justify-center pb-8">
                 <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-blue-500/30 hover:bg-blue-500/10" onClick={() => handleSimpleEntryChange('men', simpleEntries.men - 1)}>-</Button>
                 <span className="text-4xl font-bold w-16 text-center tabular-nums text-blue-500">{simpleEntries.men}</span>
-                <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-blue-500/30 hover:bg-blue-500/10" onClick={() => handleSimpleEntryChange('men', simpleEntries.men - 1)}>+</Button>
+                <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-blue-500/30 hover:bg-blue-500/10" onClick={() => handleSimpleEntryChange('men', simpleEntries.men + 1)}>+</Button>
               </CardContent>
             </Card>
           </CardContent>
@@ -427,9 +439,9 @@ export function SeatSelection({ lang }: { lang: Locale }) {
               />
            </div>
 
-           {/* Tier Selection */}
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tiers.map(tier => {
+          {/* Tier Selection */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+             {tiers.map(tier => {
                  const sampleSeat = seats.find(s => s.tier === tier);
                  if (!sampleSeat) return null;
 
@@ -453,7 +465,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                         
                         <div className="flex items-center justify-between mt-4">
                             <span className="text-xs text-muted-foreground">
-                                {availableCount === 0 && selectedCount === 0 ? pageContent.unavailable : `${availableCount} ${pageContent.available}`}
+                                {pageContent.seatDescription(sampleSeat.capacity)}
                             </span>
                             <div className="flex items-center gap-3">
                                 <Button 
@@ -479,8 +491,10 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                         </div>
                     </div>
                  )
-              })}
-           </div>
+             })}
+          </div>
+
+           
         </CardContent>
       </Card>
     );
@@ -499,20 +513,31 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                 <div key={bottle.id} className="flex items-center justify-between p-4 border border-white/5 rounded-xl bg-background/40 hover:bg-background/60 transition-colors">
                     <span className="font-medium">{bottle.name}</span>
                     <div className="flex items-center gap-3">
-                        <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => handleBottleChange(bottle.id, -1)} disabled={count === 0}>-</Button>
+                        <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => handleBottleChange(bottle.id, -1)} disabled={onSiteAll || count === 0}>-</Button>
                         <span className="w-8 text-center font-bold text-lg">{count}</span>
-                        <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => handleBottleChange(bottle.id, 1)} disabled={totalBottles >= maxBottles}>+</Button>
+                        <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => handleBottleChange(bottle.id, 1)} disabled={onSiteAll || totalBottles >= maxBottles}>+</Button>
                     </div>
                 </div>
             )
           })}
           <div className="flex items-center justify-between p-4 border rounded-xl bg-accent/5 md:col-span-2 border-accent/30">
-            <span className="font-medium text-accent">{pageContent.chooseOnSite}</span>
             <div className="flex items-center gap-3">
-                <Button variant="outline" size="icon" className="h-9 w-9 border-accent/30 hover:bg-accent/10" onClick={() => handleOnSiteBottleChange(-1)} disabled={onSiteBottles === 0}>-</Button>
-                <span className="w-8 text-center font-bold text-lg text-accent">{onSiteBottles}</span>
-                <Button variant="outline" size="icon" className="h-9 w-9 border-accent/30 hover:bg-accent/10" onClick={() => handleOnSiteBottleChange(1)} disabled={totalBottles >= maxBottles}>+</Button>
+              <Checkbox id="onsite-all" checked={onSiteAll} onCheckedChange={(checked) => {
+                const isChecked = Boolean(checked);
+                setOnSiteAll(isChecked);
+                if (!isChecked) {
+                  setOnSiteBottles(0);
+                } else {
+                  const max = selectedSeats.length;
+                  setSelectedBottles({});
+                  setOnSiteBottles(max);
+                }
+              }} />
+              <label htmlFor="onsite-all" className="text-sm font-medium text-accent cursor-pointer">
+                {pageContent.chooseOnSite}
+              </label>
             </div>
+            <span className="text-xs text-accent/80">{onSiteAll ? `${onSiteBottles}/${maxBottles}` : `${totalBottles}/${maxBottles}`}</span>
           </div>
       </CardContent>
     </Card>

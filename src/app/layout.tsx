@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { cn } from '@/lib/utils';
 import { i18n } from '@/i18n-config';
 import { Playfair_Display, Montserrat } from 'next/font/google';
+import { CookieConsent } from '@/components/ui/cookie-consent';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -54,6 +55,7 @@ export default function RootLayout({
           <SiteHeader />
           <main className="flex-1">{children}</main>
         </div>
+        <CookieConsent lang={(params.lang as 'fr' | 'en') ?? 'fr'} />
         <Toaster />
       </body>
     </html>
