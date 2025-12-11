@@ -17,6 +17,7 @@ export async function GET(request: Request) {
         videoId: cfg.hero.videoId
       },
       media: cfg.media,
+      contact: cfg.contact ?? { phone: '', instagram: '' },
       details: {
         title: cfg.details.title?.[lang] ?? cfg.details.title?.fr,
         intro: cfg.details.intro?.[lang] ?? cfg.details.intro?.fr,

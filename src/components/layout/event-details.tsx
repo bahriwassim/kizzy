@@ -33,7 +33,7 @@ export function EventDetails({ lang, cfg }: { lang: Locale, cfg: SoireeConfig })
                     <p className="text-xl text-muted-foreground font-light leading-relaxed">
                         {cfg.details.intro}
                     </p>
-                    <SectionVideo videoId={(cfg.media.carouselVideoIds && cfg.media.carouselVideoIds[0]) || cfg.hero.videoId} />
+                    <SectionVideo lang={lang} videoId={(cfg.media.carouselVideoIds && cfg.media.carouselVideoIds[0]) || cfg.hero.videoId} />
                 </div>
 
                 {/* Grid Content */}

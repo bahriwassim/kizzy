@@ -3,8 +3,9 @@
 import { useMemo, useRef, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Volume2, VolumeX } from 'lucide-react'
+import { type Locale } from '@/i18n-config'
 
-export function SectionVideo({ videoId }: { videoId: string }) {
+export function SectionVideo({ videoId, lang = 'fr' as Locale }: { videoId: string, lang?: Locale }) {
   const [muted, setMuted] = useState(true)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const src = useMemo(() => {
@@ -54,7 +55,7 @@ export function SectionVideo({ videoId }: { videoId: string }) {
       <div className="absolute bottom-3 left-3 pointer-events-auto">
         <Button variant="outline" size="sm" className="bg-black/40 text-white border-white/30 hover:bg-black/60" onClick={toggleSound}>
           {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          <span className="ml-2 text-xs">{muted ? 'Son désactivé' : 'Son activé'}</span>
+          <span className="ml-2 text-xs">{muted ? (lang === 'en' ? 'Sound off' : 'Son désactivé') : (lang === 'en' ? 'Sound on' : 'Son activé')}</span>
         </Button>
       </div>
     </div>

@@ -1,50 +1,39 @@
-import Link from 'next/link'
+'use client'
 
-export function SiteFooter() {
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { type Locale } from '@/i18n-config'
+
+type Contact = { phone: string; instagram: string }
+
+export function SiteFooter({ lang }: { lang: Locale }) {
+  const [contact, setContact] = useState<Contact>({ phone: '', instagram: '' })
+  useEffect(() => {
+    fetch(`/api/soiree?lang=${lang}`, { cache: 'no-store' })
+      .then(r => r.json())
+      .then(d => setContact(d.contact ?? { phone: '', instagram: '' }))
+      .catch(() => {})
+  }, [lang])
+
+  const t = lang === 'en' ? {
+    cgu: 'Terms of Use', cgv: 'Terms of Sale', instagram: 'Instagram', phone: 'Phone'
+  } : {
+    cgu: 'CGU', cgv: 'CGV', instagram: 'Instagram', phone: 'Téléphone'
+  }
+
   return (
-    <footer className="mt-20 border-t">
-      <div className="container px-4 md:px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
-        <div>
-          <h4 className="font-semibold mb-3">Golden Paris NYE 2026</h4>
-          <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="#">À propos</Link></li>
-            <li><Link href="#">Équipe</Link></li>
-            <li><Link href="#">Carrières</Link></li>
-          </ul>
+    <footer className={cn('border-t border-white/10 bg-background/80 backdrop-blur')}> 
+      <div className="container mx-auto px-4 md:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="text-sm text-muted-foreground flex items-center gap-4">
+          <Link href={`/${lang}/cgu`} className="hover:text-foreground/80 underline">{t.cgu}</Link>
+          <span>•</span>
+          <Link href={`/${lang}/cgv`} className="hover:text-foreground/80 underline">{t.cgv}</Link>
         </div>
-        <div>
-          <h4 className="font-semibold mb-3">Billetterie</h4>
-          <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="#">Acheter un billet</Link></li>
-            <li><Link href="#">Remboursements</Link></li>
-            <li><Link href="#">Support</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-semibold mb-3">Organisateurs</h4>
-          <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="#">Tarifs</Link></li>
-            <li><Link href="#">Outils</Link></li>
-            <li><Link href="#">API</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-semibold mb-3">Légal</h4>
-          <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="#">Conditions</Link></li>
-            <li><Link href="#">Confidentialité</Link></li>
-            <li><Link href="#">Cookies</Link></li>
-          </ul>
-        </div>
-      </div>
-      <div className="border-t">
-        <div className="container px-4 md:px-6 py-6 text-xs text-muted-foreground flex items-center justify-between">
-          <p>© {new Date().getFullYear()} Golden Paris NYE 2026. Tous droits réservés.</p>
-          <div className="flex items-center gap-4">
-            <Link href="#">Twitter</Link>
-            <Link href="#">Instagram</Link>
-            <Link href="#">LinkedIn</Link>
-          </div>
+        <div className="text-sm text-muted-foreground flex items-center gap-4">
+          <Link href={contact.instagram || '#'} className="hover:text-foreground/80 underline" target="_blank" rel="noopener noreferrer">{t.instagram}</Link>
+          <span>•</span>
+          <a href={contact.phone ? `tel:${contact.phone}` : '#'} className="hover:text-foreground/80 underline">{t.phone}: {contact.phone || '—'}</a>
         </div>
       </div>
     </footer>

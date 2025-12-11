@@ -26,7 +26,7 @@ type SoireeConfig = {
 
 export default async function Home({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
-  const h = headers()
+  const h = await headers()
   const host = h.get('host') ?? 'localhost:3600'
   const proto = h.get('x-forwarded-proto') ?? 'http'
   const base = `${proto}://${host}`

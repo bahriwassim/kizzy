@@ -20,6 +20,8 @@ const schema = z.object({
   heroVideoId: z.string().min(1),
   flyerImageUrl: z.string().min(1),
   carouselVideoIds: z.string().min(1),
+  phone: z.string().optional(),
+  instagram: z.string().optional(),
   detailsTitleFr: z.string().min(1),
   detailsTitleEn: z.string().min(1),
   introFr: z.string().min(1),
@@ -44,9 +46,9 @@ const schema = z.object({
   buttonTextEn: z.string().min(1)
 })
 
-export default function AdminSoireePage({ params }: { params: { lang: Locale } }) {
+export default function AdminSoireePage({ params }: { params: Promise<{ lang: Locale }> }) {
   const [langState, setLangState] = useState<Locale>('fr')
-  useEffect(() => { setLangState(params.lang) }, [params])
+  useEffect(() => { params.then(p => setLangState(p.lang)) }, [params])
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -55,6 +57,7 @@ export default function AdminSoireePage({ params }: { params: { lang: Locale } }
       heroSubtitleFr: '', heroSubtitleEn: '',
       heroVideoId: '', flyerImageUrl: '',
       carouselVideoIds: '',
+      phone: '', instagram: '',
       detailsTitleFr: '', detailsTitleEn: '',
       introFr: '', introEn: '',
       arrivalTitleFr: '', arrivalTitleEn: '',
@@ -81,6 +84,8 @@ export default function AdminSoireePage({ params }: { params: { lang: Locale } }
           heroVideoId: cfg.hero.videoId,
           flyerImageUrl: cfg.media.flyerImageUrl,
           carouselVideoIds: cfg.media.carouselVideoIds.join(','),
+          phone: cfg.contact?.phone || '',
+          instagram: cfg.contact?.instagram || '',
           detailsTitleFr: cfg.details.title,
           detailsTitleEn: cfg.details.title,
           introFr: cfg.details.intro,
@@ -118,6 +123,7 @@ export default function AdminSoireePage({ params }: { params: { lang: Locale } }
         flyerImageUrl: values.flyerImageUrl,
         carouselVideoIds: values.carouselVideoIds.split(',').map(s => s.trim()).filter(Boolean)
       },
+      contact: { phone: values.phone || '', instagram: values.instagram || '' },
       details: {
         title: { fr: values.detailsTitleFr, en: values.detailsTitleEn },
         intro: { fr: values.introFr, en: values.introEn },
@@ -199,15 +205,31 @@ export default function AdminSoireePage({ params }: { params: { lang: Locale } }
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="carouselVideoIds" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>IDs vidéos carrousel (séparés par des virgules)</FormLabel>
-                  <FormControl><Input placeholder="cn9b98DHOBk,vwHpVAov4A4" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </CardContent>
-          </Card>
+          <FormField control={form.control} name="carouselVideoIds" render={({ field }) => (
+            <FormItem>
+              <FormLabel>IDs vidéos carrousel (séparés par des virgules)</FormLabel>
+              <FormControl><Input placeholder="cn9b98DHOBk,vwHpVAov4A4" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField control={form.control} name="instagram" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Lien Instagram</FormLabel>
+                <FormControl><Input placeholder="https://www.instagram.com/..." {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="phone" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Téléphone</FormLabel>
+                <FormControl><Input placeholder="+33 6 12 34 56 78" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </div>
+        </CardContent>
+      </Card>
 
           <Card>
             <CardHeader>

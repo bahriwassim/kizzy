@@ -36,7 +36,8 @@ const content = {
     }
 }
 
-export default function ConfirmationPage({ params: { lang } }: { params: { lang: Locale } }) {
+export default async function ConfirmationPage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params
   const pageContent = content[lang] || content['fr'];
 
   return (

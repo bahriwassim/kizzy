@@ -5,7 +5,7 @@
       "en": "Touch Of Class NYE 2026"
     },
     "subtitle": {
-      "fr": "Join us for an unforgettable gala evening. Dress code: tuxedo & evening gowns for a truly VIP atmosphere.",
+      "fr": "Rejoignez-nous pour une soirée de gala inoubliable. Dress code : smoking & robes de soirée pour une ambiance vraiment VIP.",
       "en": "Join us for an unforgettable gala evening. Dress code: tuxedo & evening gowns for a truly VIP atmosphere."
     },
     "videoId": "cn9b98DHOBk"
@@ -17,32 +17,32 @@
       "vwHpVAov4A4"
     ]
   },
+  "contact": {
+    "phone": "+1 929 555 0000",
+    "instagram": "https://www.instagram.com/touchofclass"
+  },
   "details": {
     "title": {
-      "fr": "The VIP Event of the Year",
+      "fr": "L’Événement VIP de l’Année",
       "en": "The VIP Event of the Year"
     },
     "intro": {
-      "fr": "Get ready to enter a world where luxury, a supercharged atmosphere, and unique experiences meet.",
+      "fr": "Préparez-vous à entrer dans un univers où luxe, ambiance survoltée et expériences inédites se rencontrent.",
       "en": "Get ready to enter a world where luxury, a supercharged atmosphere, and unique experiences meet."
     },
     "arrival": {
       "title": {
-        "fr": "The Gala Welcome",
+        "fr": "L'Accueil de Gala",
         "en": "The Gala Welcome"
       },
       "desc": {
-        "fr": "Upon arrival, a dedicated team welcomes you to a fully privatized space, meticulously decorated for the occasion. The atmosphere is sophisticated: elegant lighting, a lounge ambiance, and chill music create an irresistible first impression.",
+        "fr": "Dès votre arrivée, une équipe dédiée vous accueille dans un espace entièrement privatisé et minutieusement décoré pour l’occasion. L’atmosphère est sophistiquée : jeux de lumière élégants, ambiance lounge et musique chill créent une première impression irrésistible.",
         "en": "Upon arrival, a dedicated team welcomes you to a fully privatized space, meticulously decorated for the occasion. The atmosphere is sophisticated: elegant lighting, a lounge ambiance, and chill music create an irresistible first impression."
       },
       "perks": {
         "fr": [
-          {
-            "text": "Generous buffet and unlimited drinks"
-          },
-          {
-            "text": "Photowall, pro photographer, and 360° photobooth"
-          }
+          { "text": "Buffet généreux et boissons à volonté" },
+          { "text": "Photowall, photographe pro et 360° photobooth" }
         ],
         "en": [
           {
@@ -56,28 +56,28 @@
     },
     "party": {
       "title": {
-        "fr": "The Grand Turn Up",
+        "fr": "Le Grand Turn Up",
         "en": "The Grand Turn Up"
       },
       "desc": {
-        "fr": "As the evening progresses, the atmosphere intensifies. The lighting transforms, the bass deepens, and the party takes on a whole new dimension. Exclusive dancers and performers take the stage to put on a real show: choreography, immersive entertainment, visual displays... The pace never drops.",
+        "fr": "À mesure que la soirée avance, l’ambiance monte en intensité. Les éclairages se transforment, les basses s’intensifient, et la fête prend une toute autre dimension. Danseurs et performers exclusifs montent sur scène pour offrir un véritable show : chorégraphies, animations immersives, jeux visuels… Le rythme ne redescend jamais.",
         "en": "As the evening progresses, the atmosphere intensifies. The lighting transforms, the bass deepens, and the party takes on a whole new dimension. Exclusive dancers and performers take the stage to put on a real show: choreography, immersive entertainment, visual displays... The pace never drops."
       }
     },
     "countdown": {
-      "fr": "The highlight of the night: a spectacular countdown with visual effects, live performances, and staging designed to give you an unforgettable emotional peak. The party then continues until 6 AM, driven by an explosive mix, a fiery atmosphere, and a unique collective energy.",
+      "fr": "Le moment fort de la nuit : un compte à rebours spectaculaire accompagné d’effets visuels, de performances live et d’une mise en scène pensée pour vous faire vivre un pic d’émotion inoubliable. La fête continue ensuite jusqu’à 6h du matin, portée par un mix explosif, une ambiance enflammée et une énergie collective unique.",
       "en": "The highlight of the night: a spectacular countdown with visual effects, live performances, and staging designed to give you an unforgettable emotional peak. The party then continues until 6 AM, driven by an explosive mix, a fiery atmosphere, and a unique collective energy."
     },
     "outro": {
-      "fr": "A prestigious, accessible, secure, and unforgettable evening.",
+      "fr": "Une soirée prestigieuse, accessible, sécurisée et inoubliable.",
       "en": "A prestigious, accessible, secure, and unforgettable evening."
     },
     "subOutro": {
-      "fr": "A VIP experience designed for those who don't just want a night out... but THE night of the year.",
+      "fr": "Une expérience VIP conçue pour ceux qui veulent vivre non pas une soirée… mais LA soirée de l’année.",
       "en": "A VIP experience designed for those who don't just want a night out... but THE night of the year."
     },
     "buttonText": {
-      "fr": "Book Your VIP Experience",
+      "fr": "Réservez Votre Expérience VIP",
       "en": "Book Your VIP Experience"
     }
   }
