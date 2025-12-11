@@ -9,13 +9,13 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 
 const content = {
   fr: {
-    title: "Golden Paris NYE 2026",
+    title: "Touch Of Class NYE 2026",
     subtitle: "Rejoignez-nous pour une soirée de gala inoubliable. Dress code : smoking & robes de soirée pour une ambiance vraiment VIP.",
     button: "Réservez votre table ou entrée",
     pricing: "Les prix augmenteront progressivement à partir du 15 décembre 2025."
   },
   en: {
-    title: "Golden Paris NYE 2026",
+    title: "Touch Of Class NYE 2026",
     subtitle: "Join us for an unforgettable gala evening. Dress code: tuxedo & evening gowns for a truly VIP atmosphere.",
     button: "Book your table or ticket",
     pricing: "Prices will gradually increase starting December 15, 2025."

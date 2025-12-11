@@ -34,7 +34,7 @@ export default async function EventPage({ params }: { params: Promise<{ lang: Lo
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-center md:text-left">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">Golden Paris NYE 2026</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">Touch Of Class NYE 2026</h2>
           <p className="text-gray-200 text-sm md:text-base max-w-xl drop-shadow-md">
              {lang === 'en' ? 'Experience the most exclusive New Year\'s Eve party in Paris.' : 'Vivez la soirée du Nouvel An la plus exclusive de Paris.'}
           </p>

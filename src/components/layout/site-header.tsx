@@ -17,12 +17,12 @@ const content = {
   fr: {
     event: "Événement",
     admin: "Admin",
-    title: "Golden Paris NYE 2026"
+    title: "Touch Of Class NYE 2026"
   },
   en: {
     event: "Event",
     admin: "Admin",
-    title: "Golden Paris NYE 2026"
+    title: "Touch Of Class NYE 2026"
   }
 }
 
