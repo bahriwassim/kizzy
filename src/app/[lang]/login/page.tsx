@@ -16,7 +16,8 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter, useParams } from 'next/navigation'
-import { PartyPopper } from 'lucide-react'
+import React from 'react'
+import { PartyPopper, Eye, EyeOff } from 'lucide-react'
 import { Locale } from '@/i18n-config'
 
 const formSchema = z.object({
@@ -76,7 +77,21 @@ export default function LoginPage() {
               <FormField control={form.control} name="password" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Mot de passe</FormLabel>
-                  <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                  <div className="relative">
+                    <FormControl><Input id="admin-password-input" type="password" placeholder="••••••••" {...field} /></FormControl>
+                    <button
+                      type="button"
+                      aria-label="Afficher / masquer le mot de passe"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      onClick={() => {
+                        const el = document.getElementById('admin-password-input') as HTMLInputElement | null
+                        if (!el) return
+                        el.type = el.type === 'password' ? 'text' : 'password'
+                      }}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}/>

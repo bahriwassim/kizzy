@@ -199,10 +199,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
 
   const pageContent = content[lang] || content['fr'];
 
-  // Scroll to top on step change
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentStep]);
+  // Ne pas forcer le scroll en haut lors du changement d’étape
 
   useEffect(() => {
     if (onSiteAll) {
@@ -464,7 +461,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                         </div>
                         
                         <div className="flex items-center justify-between mt-4">
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-white">
                                 {pageContent.seatDescription(sampleSeat.capacity)}
                             </span>
                             <div className="flex items-center gap-3">
@@ -638,19 +635,19 @@ export function SeatSelection({ lang }: { lang: Locale }) {
             )}
 
             {bookingType === 'table' && selectedSeats.length > 0 && (
-                 <div className="bg-gradient-to-r from-blue-500/10 to-transparent p-4 rounded-xl border border-blue-500/20">
+                 <div className="bg-gradient-to-r from-purple-500/15 to-yellow-500/15 p-4 rounded-xl border border-purple-500/30">
                     <div className="flex items-start gap-4">
-                        <div className="bg-blue-500/20 p-2 rounded-full">
-                            <Ticket className="w-6 h-6 text-blue-400" />
+                        <div className="bg-purple-500/20 p-2 rounded-full">
+                            <Ticket className="w-6 h-6 text-purple-400" />
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-bold text-blue-400 mb-1">{pageContent.addMoreTables}</h4>
+                            <h4 className="font-bold bg-gradient-to-r from-purple-400 to-yellow-400 bg-clip-text text-transparent mb-1">{pageContent.addMoreTables}</h4>
                             <p className="text-sm text-muted-foreground mb-3">{pageContent.addMoreTablesDesc}</p>
                             <div className="flex gap-2">
                                 <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
+                                    className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/20"
                                     onClick={() => {
                                         // Just go back to step 2 (table selection) but keep current type
                                         setCurrentStep(2); 

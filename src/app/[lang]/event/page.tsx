@@ -1,6 +1,7 @@
 import { SeatSelection } from './components/seat-selection';
 import Image from 'next/image';
 import { type Locale } from '@/i18n-config';
+import { HomePopular } from '@/components/layout/home-popular';
 
 const content = {
   fr: {
@@ -41,14 +42,8 @@ export default async function EventPage({ params }: { params: Promise<{ lang: Lo
         </div>
       </div>
 
-      {/* Progressive pricing message banner */}
-      <div className="mb-12 rounded-xl border border-accent/20 bg-accent/5 p-6 text-center backdrop-blur-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
-        <span className="font-headline text-base md:text-lg text-accent font-semibold tracking-wide uppercase flex items-center justify-center gap-2">
-           <span className="inline-block w-2 h-2 rounded-full bg-accent animate-pulse" />
-          {lang === 'en' ? 'Prices will gradually increase starting December 15, 2025.' : 'Les prix augmenteront progressivement à partir du 15 décembre 2025.'}
-           <span className="inline-block w-2 h-2 rounded-full bg-accent animate-pulse" />
-        </span>
+      <div className="mb-12">
+        <HomePopular lang={lang} />
       </div>
       
       <SeatSelection lang={lang} />

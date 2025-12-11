@@ -6,12 +6,14 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { type Locale } from '@/i18n-config';
-import { useEffect, useState } from 'react';
+
 
 
 const formSchema = z.object({
@@ -112,6 +114,7 @@ export default function CheckoutPage({ params: { lang } }: { params: { lang: Loc
   
   const [checkoutData, setCheckoutData] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
 
   useEffect(() => {
     setIsMounted(true);
@@ -139,6 +142,9 @@ export default function CheckoutPage({ params: { lang } }: { params: { lang: Loc
     },
   });
 
+  const [phoneCode, setPhoneCode] = useState('+33')
+  const phonePlaceholder = useMemo(() => (lang === 'en' ? '+1 234 567 890' : '+33 6 12 34 56 78'), [lang])
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log({...values, orderDetails: checkoutData}); 
     toast({
@@ -160,16 +166,9 @@ export default function CheckoutPage({ params: { lang } }: { params: { lang: Loc
     <div className="container mx-auto py-12 px-4 md:px-6 max-w-4xl">
       <div className="text-center mb-12">
         <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight">{pageContent.pageTitle}</h1>
-        <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-          {pageContent.pageDescription}
-        </p>
+        
       </div>
-      {/* Message banner about progressive price increase */}
-      <div className="mb-6 rounded-md border bg-card p-4 text-center">
-        <span className="font-headline text-sm md:text-base">
-          Les prix augmenteront progressivement à partir du 15 décembre 2025.
-        </span>
-      </div>
+      
 
       <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-8">
         <Card className="bg-card/50">
@@ -199,7 +198,28 @@ export default function CheckoutPage({ params: { lang } }: { params: { lang: Loc
                   <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{pageContent.phoneLabel}</FormLabel>
-                      <FormControl><Input type="tel" placeholder={pageContent.phonePlaceholder} {...field} /></FormControl>
+                      <div className="flex gap-2">
+                        <Select value={phoneCode} onValueChange={(v) => { setPhoneCode(v); field.onChange(`${v} ${field.value?.replace(/^\+?\d+\s?/, '') || ''}`) }}>
+                          <SelectTrigger className="w-28">
+                            <SelectValue placeholder="+33" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="+33">+33 FR</SelectItem>
+                            <SelectItem value="+44">+44 UK</SelectItem>
+                            <SelectItem value="+1">+1 US</SelectItem>
+                            <SelectItem value="+212">+212 MA</SelectItem>
+                            <SelectItem value="+49">+49 DE</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormControl>
+                          <Input
+                            type="tel"
+                            placeholder={phonePlaceholder}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(`${phoneCode} ${e.target.value.replace(/^\+?\d+\s?/, '')}`)}
+                          />
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}/>
