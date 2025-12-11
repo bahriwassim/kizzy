@@ -2,6 +2,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { type Locale } from "@/i18n-config";
+import { VideoCarousel } from "./video-carousel";
 
 const content = {
     fr: {
@@ -55,9 +56,7 @@ export function EventDetails({ lang }: { lang: Locale }) {
                     <p className="text-xl text-muted-foreground font-light leading-relaxed">
                         {pageContent.intro}
                     </p>
-                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground/80 mt-4 bg-secondary/50 py-2 px-4 rounded-lg inline-block">
-                        {pageContent.locationInfo}
-                    </div>
+                    <VideoCarousel videoIds={["cn9b98DHOBk", "vwHpVAov4A4"]} />
                 </div>
 
                 {/* Grid Content */}

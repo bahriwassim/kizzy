@@ -643,13 +643,12 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                         <div className="flex-1">
                             <h4 className="font-bold bg-gradient-to-r from-purple-400 to-yellow-400 bg-clip-text text-transparent mb-1">{pageContent.addMoreTables}</h4>
                             <p className="text-sm text-muted-foreground mb-3">{pageContent.addMoreTablesDesc}</p>
-                            <div className="flex gap-2">
+                            <div className="grid grid-cols-1 gap-2">
                                 <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/20"
+                                    className="w-full border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/20"
                                     onClick={() => {
-                                        // Just go back to step 2 (table selection) but keep current type
                                         setCurrentStep(2); 
                                     }}
                                 >
@@ -658,11 +657,9 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                                 <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20"
+                                    className="w-full border-purple-500/50 text-purple-400 hover:bg-purple-500/20"
                                     onClick={() => {
-                                        // Switch view to simple entries but keep existing table selection
-                                        // We need to modify state to show simple entries
-                                        setBookingType('simple'); // This might reset some views, but data is preserved in state
+                                        setBookingType('simple');
                                         setCurrentStep(2);
                                     }}
                                 >
@@ -720,7 +717,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                 const isCompleted = stepNum < currentStep;
                 
                 return (
-                    <div key={stepNum} className="flex flex-col items-center gap-2">
+                    <div key={stepNum} className="relative flex flex-col items-center gap-2">
                         <div className={cn(
                             "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base transition-all duration-300 border-2",
                             isActive ? "bg-accent border-accent text-accent-foreground scale-110 shadow-[0_0_15px_rgba(255,215,0,0.5)]" : 
@@ -746,7 +743,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-xl border-t border-white/10 z-50 md:static md:bg-transparent md:border-0 md:p-0">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-xl border-t border-white/10 z-50 md:static md:bg-transparent md:border-0 md:p-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}>
           <div className="flex gap-4 max-w-5xl mx-auto">
             {currentStep > 1 && (
                 <Button 
@@ -787,7 +784,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
       </div>
       
       {/* Spacer for mobile fixed footer */}
-      <div className="h-24 md:hidden" />
+      <div className="h-28 md:hidden" />
     </div>
   );
 }
