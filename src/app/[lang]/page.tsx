@@ -34,8 +34,8 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <iframe
             className="absolute"
-            src="https://www.youtube.com/embed/vwHpVAov4A4?autoplay=1&mute=1&controls=0&loop=1&playlist=vwHpVAov4A4&modestbranding=1&rel=0&playsinline=1"
-            title="KIZZY EVENT - Gatsby new years eve 2023"
+            src="https://www.youtube.com/embed/cn9b98DHOBk?autoplay=1&mute=1&controls=0&loop=1&playlist=cn9b98DHOBk&modestbranding=1&rel=0&playsinline=1"
+            title="Garden - Annonce Nouvel An I"
             allow="autoplay; encrypted-media"
             allowFullScreen
             style={{

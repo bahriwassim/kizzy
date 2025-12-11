@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { type Locale } from "@/i18n-config";
 
 const content = {
@@ -14,8 +13,19 @@ const content = {
 }
 
 export function PhotoGallery({ lang }: { lang: Locale }) {
-    const galleryImages = PlaceHolderImages.filter(p => p.id.startsWith('gallery-'));
     const pageContent = content[lang] || content['fr'];
+    const fileNames = [
+        "WhatsApp Image 2025-12-11 at 08.51.15.jpeg",
+        "WhatsApp Image 2025-12-11 at 08.51.25.jpeg",
+        "WhatsApp Image 2025-12-11 at 08.51.45.jpeg",
+        "WhatsApp Image 2025-12-11 at 08.52.02.jpeg",
+        "WhatsApp Image 2025-12-11 at 08.54.12.jpeg",
+        "WhatsApp Image 2025-12-11 at 08.54.25.jpeg",
+    ];
+    const galleryImages = fileNames.map((name) => ({
+        src: `/1/${encodeURIComponent(name)}`,
+        alt: name,
+    }));
 
     return (
         <section className="py-24">
@@ -25,28 +35,20 @@ export function PhotoGallery({ lang }: { lang: Locale }) {
                     <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-light">{pageContent.description}</p>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[300px]">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {galleryImages.map((image, index) => (
                         <div 
-                            key={image.id} 
-                            className={`relative group overflow-hidden rounded-2xl shadow-lg cursor-pointer ${
-                                index === 0 ? 'md:col-span-2 md:row-span-2' : 
-                                index === 3 ? 'md:col-span-2' : ''
-                            }`}
+                            key={image.src} 
+                            className="relative group overflow-hidden rounded-2xl shadow-lg cursor-pointer aspect-square"
                         >
                             <Image
-                                src={image.imageUrl}
-                                alt={image.description}
+                                src={image.src}
+                                alt={image.alt}
                                 fill
                                 className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                data-ai-hint={image.imageHint}
                             />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <span className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/30 text-white rounded-full text-sm font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                    View
-                                </span>
-                            </div>
+                            
                         </div>
                     ))}
                 </div>
