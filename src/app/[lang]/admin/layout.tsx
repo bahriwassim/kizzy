@@ -27,6 +27,7 @@ import { Locale } from '@/i18n-config';
 const menuItems = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
   { href: '/admin/events', icon: Ticket, label: 'Événements' },
+  { href: '/admin/soiree', icon: PartyPopper, label: 'Soirée' },
   { href: '/admin/reservations', icon: ClipboardList, label: 'Réservations' },
   { href: '/admin/seats', icon: Armchair, label: 'Sièges & Salles' },
   { href: '/admin/promos', icon: Percent, label: 'Codes Promo' },

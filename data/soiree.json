@@ -1,0 +1,84 @@
+{
+  "hero": {
+    "title": {
+      "fr": "Touch Of Class NYE 2026",
+      "en": "Touch Of Class NYE 2026"
+    },
+    "subtitle": {
+      "fr": "Join us for an unforgettable gala evening. Dress code: tuxedo & evening gowns for a truly VIP atmosphere.",
+      "en": "Join us for an unforgettable gala evening. Dress code: tuxedo & evening gowns for a truly VIP atmosphere."
+    },
+    "videoId": "cn9b98DHOBk"
+  },
+  "media": {
+    "flyerImageUrl": "/WhatsApp%20Image%202025-12-02%20at%2022.22.39.jpeg",
+    "carouselVideoIds": [
+      "cn9b98DHOBk",
+      "vwHpVAov4A4"
+    ]
+  },
+  "details": {
+    "title": {
+      "fr": "The VIP Event of the Year",
+      "en": "The VIP Event of the Year"
+    },
+    "intro": {
+      "fr": "Get ready to enter a world where luxury, a supercharged atmosphere, and unique experiences meet.",
+      "en": "Get ready to enter a world where luxury, a supercharged atmosphere, and unique experiences meet."
+    },
+    "arrival": {
+      "title": {
+        "fr": "The Gala Welcome",
+        "en": "The Gala Welcome"
+      },
+      "desc": {
+        "fr": "Upon arrival, a dedicated team welcomes you to a fully privatized space, meticulously decorated for the occasion. The atmosphere is sophisticated: elegant lighting, a lounge ambiance, and chill music create an irresistible first impression.",
+        "en": "Upon arrival, a dedicated team welcomes you to a fully privatized space, meticulously decorated for the occasion. The atmosphere is sophisticated: elegant lighting, a lounge ambiance, and chill music create an irresistible first impression."
+      },
+      "perks": {
+        "fr": [
+          {
+            "text": "Generous buffet and unlimited drinks"
+          },
+          {
+            "text": "Photowall, pro photographer, and 360° photobooth"
+          }
+        ],
+        "en": [
+          {
+            "text": "Generous buffet and unlimited drinks"
+          },
+          {
+            "text": "Photowall, pro photographer, and 360° photobooth"
+          }
+        ]
+      }
+    },
+    "party": {
+      "title": {
+        "fr": "The Grand Turn Up",
+        "en": "The Grand Turn Up"
+      },
+      "desc": {
+        "fr": "As the evening progresses, the atmosphere intensifies. The lighting transforms, the bass deepens, and the party takes on a whole new dimension. Exclusive dancers and performers take the stage to put on a real show: choreography, immersive entertainment, visual displays... The pace never drops.",
+        "en": "As the evening progresses, the atmosphere intensifies. The lighting transforms, the bass deepens, and the party takes on a whole new dimension. Exclusive dancers and performers take the stage to put on a real show: choreography, immersive entertainment, visual displays... The pace never drops."
+      }
+    },
+    "countdown": {
+      "fr": "The highlight of the night: a spectacular countdown with visual effects, live performances, and staging designed to give you an unforgettable emotional peak. The party then continues until 6 AM, driven by an explosive mix, a fiery atmosphere, and a unique collective energy.",
+      "en": "The highlight of the night: a spectacular countdown with visual effects, live performances, and staging designed to give you an unforgettable emotional peak. The party then continues until 6 AM, driven by an explosive mix, a fiery atmosphere, and a unique collective energy."
+    },
+    "outro": {
+      "fr": "A prestigious, accessible, secure, and unforgettable evening.",
+      "en": "A prestigious, accessible, secure, and unforgettable evening."
+    },
+    "subOutro": {
+      "fr": "A VIP experience designed for those who don't just want a night out... but THE night of the year.",
+      "en": "A VIP experience designed for those who don't just want a night out... but THE night of the year."
+    },
+    "buttonText": {
+      "fr": "Book Your VIP Experience",
+      "en": "Book Your VIP Experience"
+    }
+  }
+}
