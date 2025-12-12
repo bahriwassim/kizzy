@@ -8,10 +8,10 @@
       "fr": "Rejoignez-nous pour une soirée de gala inoubliable. Dress code : smoking & robes de soirée pour une ambiance vraiment VIP.",
       "en": "Join us for an unforgettable gala evening. Dress code: tuxedo & evening gowns for a truly VIP atmosphere."
     },
-    "videoId": "cn9b98DHOBk"
+    "videoId": "7T4BpAorMtU"
   },
   "media": {
-    "flyerImageUrl": "/WhatsApp%20Image%202025-12-02%20at%2022.22.39.jpeg",
+    "flyerImageUrl": "/flayer2.jpeg",
     "carouselVideoIds": [
       "cn9b98DHOBk",
       "vwHpVAov4A4"
@@ -40,18 +40,8 @@
         "en": "Upon arrival, a dedicated team welcomes you to a fully privatized space, meticulously decorated for the occasion. The atmosphere is sophisticated: elegant lighting, a lounge ambiance, and chill music create an irresistible first impression."
       },
       "perks": {
-        "fr": [
-          { "text": "Buffet généreux et boissons à volonté" },
-          { "text": "Photowall, photographe pro et 360° photobooth" }
-        ],
-        "en": [
-          {
-            "text": "Generous buffet and unlimited drinks"
-          },
-          {
-            "text": "Photowall, pro photographer, and 360° photobooth"
-          }
-        ]
+        "fr": [],
+        "en": []
       }
     },
     "party": {

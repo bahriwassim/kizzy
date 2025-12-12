@@ -24,6 +24,14 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Golden Paris NYE 2026',
   description: "Réservez vos billets pour l'événement le plus exclusif du nouvel an !",
+  icons: {
+    icon: [
+      { url: '/IMG_4208.ico', type: 'image/x-icon', sizes: 'any' },
+      { url: '/favicon.ico', type: 'image/x-icon', sizes: 'any' },
+    ],
+    shortcut: ['/favicon.ico', '/IMG_4208.ico'],
+    apple: ['/IMG_4208.ico'],
+  }
 };
 
 export async function generateStaticParams() {

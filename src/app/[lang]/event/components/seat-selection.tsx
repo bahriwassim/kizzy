@@ -28,7 +28,7 @@ interface Seat {
 const tierColors: Record<SeatTier, string> = {
     'STANDARD': 'border-indigo-500 text-indigo-500',
     'PREMIUM': 'border-blue-500 text-blue-500',
-    'VIP': 'border-gray-400 text-gray-400',
+    'VIP': 'border-blue-500 text-blue-500',
     'PLATINIUM': 'border-green-500 text-green-500',
     'ULTRA VIP': 'border-yellow-500 text-yellow-500',
     'PRESTIGE': 'border-purple-500 text-purple-500',
@@ -103,7 +103,7 @@ const content = {
     yourSelection: 'Votre Sélection',
     checkOrder: 'Vérifiez votre commande avant de payer.',
     viewSelection: 'Voir la sélection',
-    seatDescription: (capacity: number) => `Table pour ${capacity} personnes. Une bouteille incluse par table.`,
+    seatDescription: (capacity: number) => `Table pour ${capacity} personnes. Bouteilles au choix dans la limite du budget.`,
     ariaLabel: (label: string, tier: string, price: number, status: string) => `Table ${label}, ${tier}, ${price} euros, ${status}`,
     packsLegendTitle: 'Légende des packs',
     packsLegendItems: [
@@ -163,7 +163,7 @@ const content = {
     yourSelection: 'Your Selection',
     checkOrder: 'Check your order before paying.',
     viewSelection: 'View selection',
-    seatDescription: (capacity: number) => `Table for ${capacity} people. One bottle included per table.`,
+    seatDescription: (capacity: number) => `Table for ${capacity} people. Bottles of your choice within budget. Per table according to the number of people.`,
     ariaLabel: (label: string, tier: string, price: number, status: string) => `Table ${label}, ${tier}, ${price} euros, ${status}`,
     packsLegendTitle: 'Packs Legend',
     packsLegendItems: [
@@ -214,8 +214,11 @@ export function SeatSelection({ lang }: { lang: Locale }) {
 
   const pageContent = content[lang] || content['fr'];
 
-  // Ne pas forcer le scroll en haut lors du changement d’étape
-
+  useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch {}
+  }, [currentStep])
   useEffect(() => {
     // Reset per-seat bottles when seats change (preserve where possible)
     setSelectedBottlesBySeat(prev => {

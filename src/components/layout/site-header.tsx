@@ -43,7 +43,7 @@ export function SiteHeader() {
       <div className="container flex h-16 items-center">
         <Link href={`/${lang}`} className="mr-6 flex items-center space-x-2">
           <PartyPopper className="h-6 w-6 text-accent" />
-          <span className="hidden font-bold font-headline sm:inline-block">
+          <span className="inline-block font-bold font-headline truncate max-w-[200px] sm:max-w-none">
             {headerContent.title}
           </span>
         </Link>

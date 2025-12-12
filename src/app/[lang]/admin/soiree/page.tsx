@@ -297,14 +297,14 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
               <FormField control={form.control} name="perksFr" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Avantages (FR) JSON</FormLabel>
-                  <FormControl><Textarea placeholder='[{"text":"Buffet..."}]' value={JSON.stringify(field.value)} onChange={(e) => field.onChange(JSON.parse(e.target.value || '[]'))} /></FormControl>
+                  <FormControl><Textarea placeholder='[]' value={JSON.stringify(field.value)} onChange={(e) => field.onChange(JSON.parse(e.target.value || '[]'))} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="perksEn" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Perks (EN) JSON</FormLabel>
-                  <FormControl><Textarea placeholder='[{"text":"Generous buffet..."}]' value={JSON.stringify(field.value)} onChange={(e) => field.onChange(JSON.parse(e.target.value || '[]'))} /></FormControl>
+                  <FormControl><Textarea placeholder='[]' value={JSON.stringify(field.value)} onChange={(e) => field.onChange(JSON.parse(e.target.value || '[]'))} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

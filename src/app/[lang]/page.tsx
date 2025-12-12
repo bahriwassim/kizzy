@@ -5,7 +5,7 @@ import { EventDetails } from '@/components/layout/event-details';
 import { PhotoGallery } from '@/components/layout/photo-gallery';
 import { type Locale } from '@/i18n-config';
 import { HomePopular } from '@/components/layout/home-popular';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Instagram } from 'lucide-react';
 import { HeroVideo } from '@/components/layout/hero-video';
 import { headers } from 'next/headers'
 
@@ -50,7 +50,7 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
             </h1>
             
             <div className="pt-4">
-              <Button asChild size="lg" className="h-14 rounded-full px-8 text-lg font-bold bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)]">
+              <Button asChild size="lg" className="h-14 rounded-full px-8 text-lg font-bold bg-yellow-500 text-black hover:bg-yellow-600 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)]">
                 <Link href={`/${lang}/event`} className="flex items-center gap-2">
                   {cfg.details.buttonText}
                   <ArrowRight className="h-5 w-5" />
@@ -76,6 +76,40 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
       {/* Photo Gallery Section */}
       <section className="relative z-10 pb-20">
         <PhotoGallery lang={lang} />
+      </section>
+
+      {/* Instagram CTA */}
+      <section className="relative z-10 pb-24">
+        <div className="container px-4 md:px-6 mx-auto text-center">
+          <div className="inline-flex items-center gap-3 rounded-full border px-6 py-4 bg-card shadow-sm">
+            <Instagram className="h-5 w-5" />
+            <Link
+              href={"https://www.instagram.com/la_garden_party_paris?igsh=MXc1cGhlYXZ6OWx5Ng=="}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline"
+            >
+              {lang === 'fr' ? 'voir nos évènements et nous suivre sur Instagram' : 'see our events and follow us on Instagram'}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Extra CTA */}
+      <section className="relative z-10 pb-24">
+        <div className="container px-4 md:px-6 mx-auto text-center space-y-4">
+          <h3 className="text-2xl md:text-3xl font-bold">
+            {lang === 'fr' ? 'Réservez votre table maintenant' : 'Book your table now'}
+          </h3>
+          <p className="text-muted-foreground">
+            {lang === 'fr' ? 'Choisissez votre expérience et profitez d’une nuit inoubliable.' : 'Choose your experience and enjoy an unforgettable night.'}
+          </p>
+          <Button asChild size="lg" className="rounded-full px-8 bg-yellow-500 text-black hover:bg-yellow-600 shadow-lg shadow-yellow-500/30">
+            <Link href={`/${lang}/event`}>
+              {lang === 'fr' ? 'Réserver' : 'Book Now'}
+            </Link>
+          </Button>
+        </div>
       </section>
     </main>
   );

@@ -27,7 +27,7 @@ export default async function EventPage({ params }: { params: Promise<{ lang: Lo
       </div>
       <div className="relative w-full h-64 md:h-96 mb-12 overflow-hidden rounded-2xl border border-white/10 shadow-2xl group">
         <Image
-          src="/WhatsApp%20Image%202025-12-02%20at%2022.22.39.jpeg"
+          src="/flayer1.jpeg"
           alt="Event flier"
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
