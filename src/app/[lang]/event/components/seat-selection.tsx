@@ -14,7 +14,7 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 
 type SeatStatus = 'available' | 'unavailable' | 'selected';
-type SeatTier = 'PREMIUM' | 'VIP' | 'PLATINIUM' | 'ULTRA VIP' | 'PRESTIGE';
+type SeatTier = 'STANDARD' | 'PREMIUM' | 'VIP' | 'PLATINIUM' | 'ULTRA VIP' | 'PRESTIGE';
 
 interface Seat {
   id: string;
@@ -26,6 +26,7 @@ interface Seat {
 }
 
 const tierColors: Record<SeatTier, string> = {
+    'STANDARD': 'border-indigo-500 text-indigo-500',
     'PREMIUM': 'border-blue-500 text-blue-500',
     'VIP': 'border-gray-400 text-gray-400',
     'PLATINIUM': 'border-green-500 text-green-500',
@@ -36,6 +37,8 @@ const tierColors: Record<SeatTier, string> = {
 const generateSeats = (): Seat[] => {
   const seats: Seat[] = [];
   const sections: { tier: SeatTier; price: number; capacity: number; labels: string[], unavailable?: string[] }[] = [
+    { tier: 'STANDARD', price: 250, capacity: 2, labels: ['103', '104'], unavailable: ['103', '104'] },
+    { tier: 'PRESTIGE', price: 350, capacity: 3, labels: ['105', '106'], unavailable: ['105', '106'] },
     { tier: 'ULTRA VIP', price: 2000, capacity: 5, labels: ['14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25'], unavailable: ['14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25'] },
     { tier: 'PLATINIUM', price: 1000, capacity: 4, labels: ['6', '7', '8', '9', '10', '11', '12', '13', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '1', '2', '3', '4', '5', '37', '38', '39', '40'] },
     { tier: 'VIP', price: 800, capacity: 4, labels: ['41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73'] },
@@ -59,11 +62,20 @@ const generateSeats = (): Seat[] => {
   return seats;
 };
 
-const BOTTLE_OPTIONS = [
-  { id: 'vodka', name: 'Vodka (Grey Goose)' },
-  { id: 'whisky', name: 'Whisky (Jack Daniels)' },
-  { id: 'gin', name: 'Gin (Bombay Sapphire)' },
-  { id: 'champagne', name: 'Champagne (Moët & Chandon)' },
+type BottleOption = { id: string; name: string; price: number }
+const BOTTLE_OPTIONS: BottleOption[] = [
+  { id: 'vodka-70', name: 'Vodka 70 cl (Grey Goose)', price: 250 },
+  { id: 'vodka-magnum-15', name: 'Magnum Vodka 1,5 l (Grey Goose)', price: 500 },
+  { id: 'whisky-70', name: 'Whiskies 70 cl (Jack Daniels)', price: 250 },
+  { id: 'whisky-15', name: 'Whiskies 1,5 l (Jack Daniels)', price: 500 },
+  { id: 'rhum-ambre-70', name: 'Rhum Ambré 70 cl (Trois Rivières Ambre)', price: 250 },
+  { id: 'champagne-moet-70', name: 'Champagne 70 cl (Moët & Chandon)', price: 250 },
+  { id: 'champagne-veuve-70', name: 'Champagne 70 cl (Veuve Clicquot)', price: 250 },
+  { id: 'champagne-ruinart-70', name: 'Champagne 70 cl (Ruinart B.B)', price: 350 },
+  { id: 'champagne-belaire-70', name: 'Champagne 70 cl (Belaire B.B)', price: 200 },
+  { id: 'champagne-asgarnier-70', name: 'Champagne 70 cl (AS Garnier)', price: 150 },
+  { id: 'prosecco-70', name: 'Vin Pétillant 70 cl (Prosecco)', price: 100 },
+  { id: 'magnum-mocktail', name: 'Magnum sans alcool (Sex On the Beach)', price: 50 },
 ];
 
 const content = {
@@ -95,6 +107,8 @@ const content = {
     ariaLabel: (label: string, tier: string, price: number, status: string) => `Table ${label}, ${tier}, ${price} euros, ${status}`,
     packsLegendTitle: 'Légende des packs',
     packsLegendItems: [
+      { tier: 'STANDARD', text: 'STANDARD : 250€ (2 pers)' },
+      { tier: 'PRESTIGE', text: 'PRESTIGE : 350€ (3 pers)' },
       { tier: 'PREMIUM', text: 'PREMIUM : 500€' },
       { tier: 'VIP', text: 'VIP : 800€' },
       { tier: 'PLATINIUM', text: 'PLATINIUM : 1 000€' },
@@ -153,6 +167,8 @@ const content = {
     ariaLabel: (label: string, tier: string, price: number, status: string) => `Table ${label}, ${tier}, ${price} euros, ${status}`,
     packsLegendTitle: 'Packs Legend',
     packsLegendItems: [
+      { tier: 'STANDARD', text: 'STANDARD: €250 (2 ppl)' },
+      { tier: 'PRESTIGE', text: 'PRESTIGE: €350 (3 ppl)' },
       { tier: 'PREMIUM', text: 'PREMIUM: €500' },
       { tier: 'VIP', text: 'VIP: €800' },
       { tier: 'PLATINIUM', text: 'PLATINIUM: €1,000' },
@@ -192,9 +208,8 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   const [seats, setSeats] = useState<Seat[]>(generateSeats());
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [simpleEntries, setSimpleEntries] = useState({ men: 0, women: 0 });
-  const [selectedBottles, setSelectedBottles] = useState<Record<string, number>>({});
-  const [onSiteBottles, setOnSiteBottles] = useState(0);
-  const [onSiteAll, setOnSiteAll] = useState(false);
+  const [selectedBottlesBySeat, setSelectedBottlesBySeat] = useState<Record<string, Record<string, number>>>({});
+  const [onSiteSeat, setOnSiteSeat] = useState<Record<string, boolean>>({});
   const router = useRouter();
 
   const pageContent = content[lang] || content['fr'];
@@ -202,12 +217,18 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   // Ne pas forcer le scroll en haut lors du changement d’étape
 
   useEffect(() => {
-    if (onSiteAll) {
-      const max = selectedSeats.length;
-      setSelectedBottles({});
-      setOnSiteBottles(max);
-    }
-  }, [selectedSeats, onSiteAll]);
+    // Reset per-seat bottles when seats change (preserve where possible)
+    setSelectedBottlesBySeat(prev => {
+      const next: Record<string, Record<string, number>> = {}
+      selectedSeats.forEach(seat => { next[seat.id] = prev[seat.id] || {} })
+      return next
+    })
+    setOnSiteSeat(prev => {
+      const next: Record<string, boolean> = {}
+      selectedSeats.forEach(seat => { next[seat.id] = prev[seat.id] || false })
+      return next
+    })
+  }, [selectedSeats])
 
   const handleSeatClick = (seatId: string) => {
     const newSeats = [...seats];
@@ -222,13 +243,17 @@ export function SeatSelection({ lang }: { lang: Locale }) {
       const newSelected = selectedSeats.filter((s) => s.id !== seatId);
       setSelectedSeats(newSelected);
       
-      // Re-validate bottles count
-      const newMax = newSelected.length;
-      const currentBottles = Object.values(selectedBottles).reduce((a, b) => a + b, 0) + onSiteBottles;
-      if (currentBottles > newMax) {
-        setSelectedBottles({}); 
-        setOnSiteBottles(0);
-      }
+      // Clear per-seat selections for the deselected seat
+      setSelectedBottlesBySeat(prev => {
+        const next = { ...prev } as Record<string, Record<string, number>>
+        delete next[seatId]
+        return next
+      })
+      setOnSiteSeat(prev => {
+        const next = { ...prev } as Record<string, boolean>
+        delete next[seatId]
+        return next
+      })
     } else {
       seat.status = 'selected';
       setSelectedSeats([...selectedSeats, seat]);
@@ -255,29 +280,36 @@ export function SeatSelection({ lang }: { lang: Locale }) {
     setSimpleEntries(prev => ({...prev, [type]: newCount}));
   }
 
-  const handleBottleChange = (bottleId: string, delta: number) => {
-    if (onSiteAll) return;
-    const current = selectedBottles[bottleId] || 0;
-    const totalSpecific = Object.values(selectedBottles).reduce((a, b) => a + b, 0);
-    const total = totalSpecific + onSiteBottles;
-    const max = selectedSeats.length;
+  const getSeatBottleSum = (seatId: string) => {
+    const map = selectedBottlesBySeat[seatId] || {}
+    return Object.entries(map).reduce((sum, [bId, qty]) => {
+      const opt = BOTTLE_OPTIONS.find(b => b.id === bId)
+      return sum + (opt ? opt.price * qty : 0)
+    }, 0)
+  }
 
-    if (delta > 0 && total >= max) return;
-    
-    const newCount = Math.max(0, current + delta);
-    setSelectedBottles(prev => ({ ...prev, [bottleId]: newCount }));
-  };
+  const handleSeatBottleChange = (seatId: string, bottleId: string, delta: number, seatPrice: number) => {
+    if (onSiteSeat[seatId]) return
+    const current = selectedBottlesBySeat[seatId]?.[bottleId] || 0
+    const opt = BOTTLE_OPTIONS.find(b => b.id === bottleId)
+    if (!opt) return
+    const currentSum = getSeatBottleSum(seatId)
+    const nextSum = currentSum + (delta > 0 ? opt.price : -opt.price)
+    if (delta > 0 && nextSum > seatPrice) return
+    const nextCount = Math.max(0, current + delta)
+    setSelectedBottlesBySeat(prev => ({
+      ...prev,
+      [seatId]: { ...(prev[seatId] || {}), [bottleId]: nextCount }
+    }))
+  }
 
-  const handleOnSiteBottleChange = (delta: number) => {
-    if (onSiteAll) return;
-    const totalSpecific = Object.values(selectedBottles).reduce((a, b) => a + b, 0);
-    const total = totalSpecific + onSiteBottles;
-    const max = selectedSeats.length;
-
-    if (delta > 0 && total >= max) return;
-
-    setOnSiteBottles(prev => Math.max(0, prev + delta));
-  };
+  const toggleOnSiteForSeat = (seatId: string) => {
+    setOnSiteSeat(prev => ({ ...prev, [seatId]: !prev[seatId] }))
+    if (!onSiteSeat[seatId]) {
+      // When switching to on-site, clear selections
+      setSelectedBottlesBySeat(prev => ({ ...prev, [seatId]: {} }))
+    }
+  }
 
   const simpleEntriesPrice = useMemo(() => {
     return (simpleEntries.men * 80) + (simpleEntries.women * 50);
@@ -288,8 +320,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   }, [selectedSeats]);
 
   const totalPrice = simpleEntriesPrice + tablesPrice;
-  const totalBottles = Object.values(selectedBottles).reduce((a, b) => a + b, 0) + onSiteBottles;
-  const maxBottles = selectedSeats.length;
+  const allTablesSatisfied = useMemo(() => selectedSeats.every(seat => onSiteSeat[seat.id] || getSeatBottleSum(seat.id) === seat.price), [selectedSeats, onSiteSeat, selectedBottlesBySeat])
 
   const handleCheckout = () => {
     const orderType = selectedSeats.length > 0 ? 'table' : 'simple';
@@ -297,8 +328,8 @@ export function SeatSelection({ lang }: { lang: Locale }) {
     const checkoutData = {
       selectedSeats,
       simpleEntries,
-      selectedBottles,
-      onSiteBottles,
+      selectedBottlesBySeat,
+      onSiteSeat,
       totalPrice
     };
     sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
@@ -417,7 +448,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
       );
     }
 
-    const tiers: SeatTier[] = ['PREMIUM', 'VIP', 'PLATINIUM', 'ULTRA VIP'];
+    const tiers: SeatTier[] = ['STANDARD', 'PRESTIGE', 'PREMIUM', 'VIP', 'PLATINIUM', 'ULTRA VIP'];
 
     return (
       <Card className="border-accent/20 bg-accent/5 animate-in slide-in-from-right-8 duration-500 overflow-hidden">
@@ -429,7 +460,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
            {/* Plan Image */}
            <div className="relative w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black">
               <Image 
-                src="/plan.jpeg" 
+                src="/floor.png" 
                 alt="Floor Plan" 
                 fill 
                 className="object-contain"
@@ -453,10 +484,12 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                         <div className="flex justify-between items-start mb-2">
                             <div>
                                 <h3 className={cn("font-headline text-lg tracking-wider", tierColors[tier])}>{tier}</h3>
-                                <p className="text-sm text-muted-foreground">{sampleSeat.capacity} pers. / Table</p>
                             </div>
                             <div className="text-right">
                                 <div className="font-bold text-xl">{sampleSeat.price}€</div>
+                                {availableCount === 0 && (
+                                  <div className="text-xs mt-1 text-red-500 font-semibold">Complet</div>
+                                )}
                             </div>
                         </div>
                         
@@ -501,41 +534,50 @@ export function SeatSelection({ lang }: { lang: Locale }) {
     <Card className="border-blue-500/20 bg-blue-500/5 animate-in slide-in-from-right-8 duration-500">
       <CardHeader>
         <CardTitle className="text-blue-400 flex items-center gap-2"><Martini className="w-6 h-6"/> {pageContent.bottleStepTitle}</CardTitle>
-        <CardDescription>{pageContent.bottleSelectionDesc(totalBottles, maxBottles)}</CardDescription>
+        <CardDescription>
+          {lang === 'en'
+            ? 'Compose bottles per table: total must equal table price, or choose on site.'
+            : 'Composez les bouteilles par table : le total doit être égal au prix de table, ou choisissez sur place.'}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {BOTTLE_OPTIONS.map(bottle => {
-            const count = selectedBottles[bottle.id] || 0;
-            return (
-                <div key={bottle.id} className="flex items-center justify-between p-4 border border-white/5 rounded-xl bg-background/40 hover:bg-background/60 transition-colors">
-                    <span className="font-medium">{bottle.name}</span>
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => handleBottleChange(bottle.id, -1)} disabled={onSiteAll || count === 0}>-</Button>
-                        <span className="w-8 text-center font-bold text-lg">{count}</span>
-                        <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => handleBottleChange(bottle.id, 1)} disabled={onSiteAll || totalBottles >= maxBottles}>+</Button>
+      <CardContent className="space-y-6">
+        {selectedSeats.length === 0 && (
+          <div className="text-sm text-muted-foreground">{lang === 'en' ? 'No table selected.' : 'Aucune table sélectionnée.'}</div>
+        )}
+        {selectedSeats.map(seat => {
+          const sum = getSeatBottleSum(seat.id)
+          const satisfied = onSiteSeat[seat.id] || sum === seat.price
+          return (
+            <div key={seat.id} className="p-4 border border-white/10 rounded-xl bg-background/40">
+              <div className="flex items-center justify-between mb-3">
+                <div className="font-headline font-bold">Table {seat.label} ({seat.tier}) — {seat.price}€</div>
+                <div className={cn('text-sm', satisfied ? 'text-green-400' : 'text-accent')}>{sum}€ / {seat.price}€</div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {BOTTLE_OPTIONS.map(bottle => {
+                  const count = (selectedBottlesBySeat[seat.id]?.[bottle.id] || 0)
+                  return (
+                    <div key={bottle.id} className="flex items-center justify-between p-3 border border-white/5 rounded-lg bg-background/40">
+                      <span className="text-sm font-medium">{bottle.name} — {bottle.price}€</span>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleSeatBottleChange(seat.id, bottle.id, -1, seat.price)} disabled={onSiteSeat[seat.id] || count === 0}>-</Button>
+                        <span className="w-6 text-center font-bold">{count}</span>
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleSeatBottleChange(seat.id, bottle.id, 1, seat.price)} disabled={onSiteSeat[seat.id] || (sum + bottle.price > seat.price)}>+</Button>
+                      </div>
                     </div>
+                  )
+                })}
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center gap-2">
+                  <Checkbox id={`onsite-${seat.id}`} checked={onSiteSeat[seat.id] || false} onCheckedChange={() => toggleOnSiteForSeat(seat.id)} />
+                  <label htmlFor={`onsite-${seat.id}`} className="text-sm font-medium cursor-pointer">{pageContent.chooseOnSite}</label>
                 </div>
-            )
-          })}
-          <div className="flex items-center justify-between p-4 border rounded-xl bg-accent/5 md:col-span-2 border-accent/30">
-            <div className="flex items-center gap-3">
-              <Checkbox id="onsite-all" checked={onSiteAll} onCheckedChange={(checked) => {
-                const isChecked = Boolean(checked);
-                setOnSiteAll(isChecked);
-                if (!isChecked) {
-                  setOnSiteBottles(0);
-                } else {
-                  const max = selectedSeats.length;
-                  setSelectedBottles({});
-                  setOnSiteBottles(max);
-                }
-              }} />
-              <label htmlFor="onsite-all" className="text-sm font-medium text-accent cursor-pointer">
-                {pageContent.chooseOnSite}
-              </label>
+                <div className={cn('text-xs px-2 py-1 rounded', satisfied ? 'bg-green-500/10 text-green-400' : 'bg-accent/10 text-accent')}>{satisfied ? (lang === 'en' ? 'OK' : 'OK') : (lang === 'en' ? 'Adjust to match' : 'Ajustez pour égaler')}</div>
+              </div>
             </div>
-            <span className="text-xs text-accent/80">{onSiteAll ? `${onSiteBottles}/${maxBottles}` : `${totalBottles}/${maxBottles}`}</span>
-          </div>
+          )
+        })}
       </CardContent>
     </Card>
   );
@@ -588,21 +630,29 @@ export function SeatSelection({ lang }: { lang: Locale }) {
             {bookingType === 'table' && (
                 <div className="bg-background/40 rounded-xl p-4 border border-white/5">
                     <h4 className="font-bold mb-3 flex items-center gap-2"><Martini className="w-4 h-4 text-blue-400"/> {pageContent.bottleStepTitle}</h4>
-                     <ul className="space-y-2 text-sm">
-                        {Object.entries(selectedBottles).map(([id, count]) => count > 0 && (
-                            <li key={id} className="flex justify-between">
-                                <span>{count} x {BOTTLE_OPTIONS.find(b => b.id === id)?.name}</span>
-                                <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded">INCLUS</span>
-                            </li>
-                        ))}
-                        {onSiteBottles > 0 && (
-                            <li className="flex justify-between">
-                                <span>{onSiteBottles} x {pageContent.chooseOnSite}</span>
-                                <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded">INCLUS</span>
-                            </li>
-                        )}
-                        {totalBottles === 0 && <li className="text-muted-foreground italic">Aucune bouteille sélectionnée</li>}
-                     </ul>
+                    <ul className="space-y-2 text-sm">
+                      {selectedSeats.map(seat => {
+                        const map = selectedBottlesBySeat[seat.id] || {}
+                        const entries = Object.entries(map).filter(([, qty]) => qty > 0)
+                        return (
+                          <li key={`sum-${seat.id}`} className="space-y-1">
+                            <div className="flex justify-between"><span>Table {seat.label} ({seat.tier})</span><span className="font-mono">{getSeatBottleSum(seat.id)}€ / {seat.price}€</span></div>
+                            {onSiteSeat[seat.id] ? (
+                              <div className="flex justify-between"><span>{pageContent.chooseOnSite}</span><span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded">INCLUS</span></div>
+                            ) : entries.length > 0 ? (
+                              entries.map(([id, count]) => (
+                                <div key={`${seat.id}-${id}`} className="flex justify-between">
+                                  <span>{count} x {BOTTLE_OPTIONS.find(b => b.id === id)?.name}</span>
+                                  <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded">INCLUS</span>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-muted-foreground italic">{lang === 'en' ? 'No bottles selected' : 'Aucune bouteille sélectionnée'}</div>
+                            )}
+                          </li>
+                        )
+                      })}
+                    </ul>
                 </div>
             )}
             
@@ -765,7 +815,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                         disabled={
                             (currentStep === 2 && bookingType === 'table' && selectedSeats.length === 0) ||
                             (currentStep === 2 && bookingType === 'simple' && simpleEntries.men === 0 && simpleEntries.women === 0) ||
-                            (currentStep === 3 && bookingType === 'table' && totalBottles < maxBottles)
+                            (currentStep === 3 && bookingType === 'table' && !allTablesSatisfied)
                         }
                     >
                         {pageContent.next} <ArrowRight className="ml-2 h-4 w-4" />

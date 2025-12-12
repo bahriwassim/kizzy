@@ -11,7 +11,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { type Locale } from '@/i18n-config';
 
 
@@ -28,10 +28,18 @@ const formSchema = z.object({
 });
 
 const BOTTLE_OPTIONS = [
-  { id: 'vodka', name: 'Vodka (Grey Goose)' },
-  { id: 'whisky', name: 'Whisky (Jack Daniels)' },
-  { id: 'gin', name: 'Gin (Bombay Sapphire)' },
-  { id: 'champagne', name: 'Champagne (Moët & Chandon)' },
+  { id: 'vodka-70', name: 'Vodka 70 cl (Grey Goose)' },
+  { id: 'vodka-magnum-15', name: 'Magnum Vodka 1,5 l (Grey Goose)' },
+  { id: 'whisky-70', name: 'Whiskies 70 cl (Jack Daniels)' },
+  { id: 'whisky-15', name: 'Whiskies 1,5 l (Jack Daniels)' },
+  { id: 'rhum-ambre-70', name: 'Rhum Ambré 70 cl (Trois Rivières Ambre)' },
+  { id: 'champagne-moet-70', name: 'Champagne 70 cl (Moët & Chandon)' },
+  { id: 'champagne-veuve-70', name: 'Champagne 70 cl (Veuve Clicquot)' },
+  { id: 'champagne-ruinart-70', name: 'Champagne 70 cl (Ruinart B.B)' },
+  { id: 'champagne-belaire-70', name: 'Champagne 70 cl (Belaire B.B)' },
+  { id: 'champagne-asgarnier-70', name: 'Champagne 70 cl (AS Garnier)' },
+  { id: 'prosecco-70', name: 'Vin Pétillant 70 cl (Prosecco)' },
+  { id: 'magnum-mocktail', name: 'Magnum sans alcool (Sex On the Beach)' },
 ];
 
 const content = {
@@ -107,9 +115,11 @@ const content = {
     }
 }
 
-export default function CheckoutPage({ params: { lang } }: { params: { lang: Locale } }) {
+export default function CheckoutPage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { toast } = useToast();
   const router = useRouter();
+  const { lang: langParam } = useParams() as { lang?: Locale };
+  const lang = (langParam || 'fr') as Locale;
   const pageContent = content[lang] || content['fr'];
   
   const [checkoutData, setCheckoutData] = useState<any>(null);
@@ -160,7 +170,7 @@ export default function CheckoutPage({ params: { lang } }: { params: { lang: Loc
 
   if (!isMounted) return null;
 
-  const { selectedSeats = [], simpleEntries = { men: 0, women: 0 }, selectedBottles = {}, onSiteBottles = 0, totalPrice = 0 } = checkoutData || {};
+  const { selectedSeats = [], simpleEntries = { men: 0, women: 0 }, selectedBottlesBySeat = {}, onSiteSeat = {}, totalPrice = 0 } = checkoutData || {};
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6 max-w-4xl">
@@ -294,26 +304,47 @@ export default function CheckoutPage({ params: { lang } }: { params: { lang: Loc
                         </div>
                     )}
 
-                    {/* Render Bottles if any tables selected */}
+                    {/* Render Bottles per table */}
                     {selectedSeats.length > 0 && (
                         <div className="mt-4 pt-4 border-t border-border/50">
                             <p className="font-semibold mb-2">{pageContent.bottlesItem}</p>
-                            {Object.entries(selectedBottles).map(([id, count]: [string, any]) => {
-                                if (count === 0) return null;
-                                const bottleName = BOTTLE_OPTIONS.find(b => b.id === id)?.name || id;
+                            {selectedSeats.map((seat: any) => {
+                                const seatBottles: Record<string, number> = (selectedBottlesBySeat?.[seat.id]) || {};
+                                const hasBottles = Object.values(seatBottles).some((c) => !!c);
+                                const isOnSite = !!(onSiteSeat && onSiteSeat[seat.id]);
                                 return (
-                                    <div key={id} className="flex justify-between text-sm text-muted-foreground">
-                                        <span>{count} x {bottleName}</span>
-                                        <span>Inclus</span>
+                                    <div key={seat.id} className="mb-2">
+                                        <div className="font-medium text-sm">
+                                            {pageContent.tableItem} ({seat.tier}) - {seat.label}
+                                        </div>
+                                        {isOnSite ? (
+                                            <div className="flex justify-between text-sm text-muted-foreground">
+                                                <span>{pageContent.onSiteBottle}</span>
+                                                <span>Inclus</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {Object.entries(seatBottles).map(([id, count]) => {
+                                                    if (!count) return null;
+                                                    const bottleName = BOTTLE_OPTIONS.find(b => b.id === id)?.name || id;
+                                                    return (
+                                                        <div key={id} className="flex justify-between text-sm text-muted-foreground">
+                                                            <span>{count} x {bottleName}</span>
+                                                            <span>Inclus</span>
+                                                        </div>
+                                                    )
+                                                })}
+                                                {!hasBottles && (
+                                                    <div className="flex justify-between text-sm text-muted-foreground">
+                                                        <span>{pageContent.onSiteBottle}</span>
+                                                        <span>Inclus</span>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
                                     </div>
                                 )
                             })}
-                            {onSiteBottles > 0 && (
-                                <div className="flex justify-between text-sm text-muted-foreground">
-                                    <span>{onSiteBottles} x {pageContent.onSiteBottle}</span>
-                                    <span>Inclus</span>
-                                </div>
-                            )}
                         </div>
                     )}
 

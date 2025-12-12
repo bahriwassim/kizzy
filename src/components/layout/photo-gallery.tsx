@@ -15,6 +15,8 @@ const content = {
 export function PhotoGallery({ lang }: { lang: Locale }) {
     const pageContent = content[lang] || content['fr'];
     const fileNames = [
+        "1.jpeg",
+        "2.jpeg",
         "WhatsApp Image 2025-12-11 at 08.51.15.jpeg",
         "WhatsApp Image 2025-12-11 at 08.51.25.jpeg",
         "WhatsApp Image 2025-12-11 at 08.51.45.jpeg",
