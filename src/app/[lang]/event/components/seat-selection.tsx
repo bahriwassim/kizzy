@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -163,7 +163,7 @@ const content = {
     yourSelection: 'Your Selection',
     checkOrder: 'Check your order before paying.',
     viewSelection: 'View selection',
-    seatDescription: (capacity: number) => `Table for ${capacity} people. Bottles of your choice within budget. Per table according to the number of people.`,
+    seatDescription: (capacity: number) => `Table for ${capacity} people. Bottles of your choice within budget. `,
     ariaLabel: (label: string, tier: string, price: number, status: string) => `Table ${label}, ${tier}, ${price} euros, ${status}`,
     packsLegendTitle: 'Packs Legend',
     packsLegendItems: [
@@ -204,6 +204,7 @@ const content = {
 export function SeatSelection({ lang }: { lang: Locale }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingType, setBookingType] = useState<'table' | 'simple' | null>(null);
+  const stepsRef = useRef<HTMLDivElement | null>(null);
   
   const [seats, setSeats] = useState<Seat[]>(generateSeats());
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -216,7 +217,11 @@ export function SeatSelection({ lang }: { lang: Locale }) {
 
   useEffect(() => {
     try {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      if (stepsRef.current) {
+        stepsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     } catch {}
   }, [currentStep])
   useEffect(() => {
@@ -758,7 +763,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
       </div>
 
       {/* Steps Indicator */}
-      <div className="mb-8 md:mb-12">
+      <div ref={stepsRef} className="mb-8 md:mb-12">
         <div className="flex justify-between relative">
             {/* Progress Line */}
             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-secondary -z-10 rounded-full" />
