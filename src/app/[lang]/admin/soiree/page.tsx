@@ -22,6 +22,10 @@ const schema = z.object({
   carouselVideoIds: z.string().min(1),
   phone: z.string().optional(),
   instagram: z.string().optional(),
+  marqueeTextFr: z.string().min(1),
+  marqueeTextEn: z.string().min(1),
+  marqueeSpeedSeconds: z.coerce.number().int().min(5).max(120),
+  marqueeEnabled: z.boolean().default(true),
   detailsTitleFr: z.string().min(1),
   detailsTitleEn: z.string().min(1),
   introFr: z.string().min(1),
@@ -58,6 +62,10 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
       heroVideoId: '', flyerImageUrl: '',
       carouselVideoIds: '',
       phone: '', instagram: '',
+      marqueeTextFr: '',
+      marqueeTextEn: '',
+      marqueeSpeedSeconds: 45,
+      marqueeEnabled: true,
       detailsTitleFr: '', detailsTitleEn: '',
       introFr: '', introEn: '',
       arrivalTitleFr: '', arrivalTitleEn: '',
@@ -86,6 +94,10 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
           carouselVideoIds: cfg.media.carouselVideoIds.join(','),
           phone: cfg.contact?.phone || '',
           instagram: cfg.contact?.instagram || '',
+          marqueeTextFr: cfg.marquee?.text || '',
+          marqueeTextEn: cfg.marquee?.text || '',
+          marqueeSpeedSeconds: cfg.marquee?.speedSeconds ?? 45,
+          marqueeEnabled: cfg.marquee?.enabled ?? true,
           detailsTitleFr: cfg.details.title,
           detailsTitleEn: cfg.details.title,
           introFr: cfg.details.intro,
@@ -124,6 +136,11 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
         carouselVideoIds: values.carouselVideoIds.split(',').map(s => s.trim()).filter(Boolean)
       },
       contact: { phone: values.phone || '', instagram: values.instagram || '' },
+      marquee: {
+        text: { fr: values.marqueeTextFr, en: values.marqueeTextEn },
+        speedSeconds: values.marqueeSpeedSeconds,
+        enabled: values.marqueeEnabled
+      },
       details: {
         title: { fr: values.detailsTitleFr, en: values.detailsTitleEn },
         intro: { fr: values.introFr, en: values.introEn },
@@ -224,6 +241,44 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
               <FormItem>
                 <FormLabel>Téléphone</FormLabel>
                 <FormControl><Input placeholder="+33 6 12 34 56 78" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Barre qui tourne (Marquee)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FormField control={form.control} name="marqueeTextFr" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Texte (FR)</FormLabel>
+              <FormControl><Textarea {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="marqueeTextEn" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Texte (EN)</FormLabel>
+              <FormControl><Textarea {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField control={form.control} name="marqueeSpeedSeconds" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Vitesse (secondes)</FormLabel>
+                <FormControl><Input type="number" min={5} max={120} {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="marqueeEnabled" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Activé</FormLabel>
+                <FormControl><Input type="checkbox" checked={field.value} onChange={(e) => field.onChange(e.target.checked)} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />

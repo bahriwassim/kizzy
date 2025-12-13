@@ -34,6 +34,11 @@ export async function GET(request: Request) {
         outro: cfg.details.outro?.[lang] ?? cfg.details.outro?.fr,
         subOutro: cfg.details.subOutro?.[lang] ?? cfg.details.subOutro?.fr,
         buttonText: cfg.details.buttonText?.[lang] ?? cfg.details.buttonText?.fr
+      },
+      marquee: {
+        text: cfg.marquee?.text?.[lang] ?? cfg.marquee?.text?.fr ?? '',
+        speedSeconds: cfg.marquee?.speedSeconds ?? 45,
+        enabled: cfg.marquee?.enabled ?? true
       }
     }
     return NextResponse.json(response, { status: 200 })

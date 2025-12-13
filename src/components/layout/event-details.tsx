@@ -65,7 +65,7 @@ export function EventDetails({ lang, cfg }: { lang: Locale, cfg: SoireeConfig })
                             </p>
                         </div>
 
-                         <div className="relative pl-8 border-l-2 border-accent/30 hover:border-accent transition-colors duration-300">
+                        <div className="relative pl-8 border-l-2 border-accent/30 hover:border-accent transition-colors duration-300">
                              <h3 className="text-3xl font-headline font-bold text-foreground mb-4">
                                 Countdown & Show
                             </h3>
@@ -84,7 +84,7 @@ export function EventDetails({ lang, cfg }: { lang: Locale, cfg: SoireeConfig })
                                 src={eventImageUrl}
                                 alt="Event Flyer"
                                 fill
-                                className="object-cover"
+                                className="object-contain"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         </div>

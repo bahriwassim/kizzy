@@ -11,10 +11,10 @@ import { QrCode } from 'lucide-react'
 
 export default function EmailsPage() {
   const { toast } = useToast()
-  const [subject, setSubject] = useState("Vos billets pour Golden Paris NYE 2026 sont confirmés !");
+  const [subject, setSubject] = useState("Vos billets pour Touch Of Class NYE 2026 sont confirmés !");
   const [body, setBody] = useState(`Bonjour {NOM_CLIENT},
 
-Merci pour votre achat ! Nous sommes ravis de vous compter parmi nous pour Golden Paris NYE 2026.
+Merci pour votre achat ! Nous sommes ravis de vous compter parmi nous pour Touch Of Class NYE 2026.
 
 Voici les détails de votre commande :
 ID de commande : {ID_COMMANDE}
@@ -25,7 +25,7 @@ Veuillez présenter le code QR ci-dessous à l'entrée de l'événement.
 {QR_CODE}
 
 À bientôt !
-L'équipe de Golden Paris NYE 2026`);
+L'équipe de Touch Of Class NYE 2026`);
 
   const handleSave = () => {
     // In a real app, this would save the template to a database.

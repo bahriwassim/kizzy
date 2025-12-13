@@ -18,9 +18,9 @@ export function SiteFooter({ lang }: { lang: Locale }) {
   }, [lang])
 
   const t = lang === 'en' ? {
-    cgu: 'Terms of Use', cgv: 'Terms of Sale', instagram: 'Instagram', phone: 'Phone'
+    cgu: 'Terms of Use', cgv: 'Terms of Sale', instagram: 'Instagram', contact: 'Contact'
   } : {
-    cgu: 'CGU', cgv: 'CGV', instagram: 'Instagram', phone: 'Téléphone'
+    cgu: 'CGU', cgv: 'CGV', instagram: 'Instagram', contact: 'Contact'
   }
 
   return (
@@ -48,7 +48,7 @@ export function SiteFooter({ lang }: { lang: Locale }) {
             </Link>
           </div>
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold tracking-wider uppercase">{t.phone}</h4>
+            <h4 className="text-sm font-semibold tracking-wider uppercase">{t.contact}</h4>
             <div className="space-y-2">
               <a href={`tel:+33664010736`} className="flex items-center gap-2 text-sm hover:text-foreground/80">
                 <Phone className="h-4 w-4 text-muted-foreground" /> HEENCS +33 6 64 01 07 36
@@ -73,22 +73,22 @@ export function SiteFooter({ lang }: { lang: Locale }) {
             <div className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-green-400" />
               <span>{lang === 'en' ? 'Secure card payment' : 'Paiement sécurisé CB'}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg viewBox="0 0 24 24" className="h-5 w-8" aria-hidden="true">
-                <rect width="24" height="24" rx="4" fill="#1A1F71" />
-                <path d="M5 15h2.2l1.1-6H6.1L5 15zM9.3 15h2l1.2-6h-2l-1.2 6zM14.5 15h1.9l2.6-6h-1.9l-2.6 6z" fill="#fff"/>
-              </svg>
-              <svg viewBox="0 0 24 24" className="h-5 w-8" aria-hidden="true">
-                <rect width="24" height="24" rx="4" fill="#261B1B" />
-                <circle cx="10" cy="12" r="5" fill="#EB001B" />
-                <circle cx="14" cy="12" r="5" fill="#F79E1B" opacity="0.85" />
-              </svg>
-              <svg viewBox="0 0 24 24" className="h-5 w-8" aria-hidden="true">
-                <rect width="24" height="24" rx="4" fill="#2E77BC" />
-                <path d="M4.5 9h15v6h-15z" fill="#fff" />
-                <path d="M6 11h12v2H6z" fill="#2E77BC" />
-              </svg>
+              <div className="flex items-center gap-2 ml-2">
+                <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
+                  <rect width="24" height="24" rx="4" fill="#1A1F71" />
+                  <path d="M5 15h2.2l1.1-6H6.1L5 15zM9.3 15h2l1.2-6h-2l-1.2 6zM14.5 15h1.9l2.6-6h-1.9l-2.6 6z" fill="#fff"/>
+                </svg>
+                <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
+                  <rect width="24" height="24" rx="4" fill="#261B1B" />
+                  <circle cx="10" cy="12" r="5" fill="#EB001B" />
+                  <circle cx="14" cy="12" r="5" fill="#F79E1B" opacity="0.85" />
+                </svg>
+                <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
+                  <rect width="24" height="24" rx="4" fill="#003087" />
+                  <path d="M7 7h8c2 0 3 1.2 2.6 3l-1 5c-.3 1.2-1.4 2-2.6 2H9.5l-.7 2H6.5l1.2-10c.1-1 .9-2 2.3-2z" fill="#fff"/>
+                  <path d="M9 9h7c1.5 0 2.3.8 2 2l-.8 4c-.2.8-.9 1.3-1.8 1.3h-5.6l-.8 2H7.2l1.1-8c.1-.7.7-1.3 1.7-1.3z" fill="#009CDE" opacity="0.9"/>
+                </svg>
+              </div>
             </div>
           </div>
         </div>

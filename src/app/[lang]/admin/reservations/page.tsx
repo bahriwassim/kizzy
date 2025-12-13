@@ -12,7 +12,7 @@ const reservations = [
     {
         id: "#K26-1A2B3C",
         customer: "Jean Dupont",
-        event: "Golden Paris NYE 2026",
+        event: "Touch Of Class NYE 2026",
         date: "2024-07-28",
         status: "Confirmée",
         amount: "682,50 €",
@@ -20,7 +20,7 @@ const reservations = [
     {
         id: "#K26-4D5E6F",
         customer: "Marie Curie",
-        event: "Golden Paris NYE 2026",
+        event: "Touch Of Class NYE 2026",
         date: "2024-07-27",
         status: "En attente",
         amount: "150,00 €",
@@ -28,7 +28,7 @@ const reservations = [
     {
         id: "#K26-7G8H9I",
         customer: "Pierre Martin",
-        event: "Golden Paris NYE 2026",
+        event: "Touch Of Class NYE 2026",
         date: "2024-07-26",
         status: "Annulée",
         amount: "250,00 €",

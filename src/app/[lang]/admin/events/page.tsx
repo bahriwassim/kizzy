@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 const events = [
-    { id: "evt_1", name: "Golden Paris NYE 2026", status: "Actif", ticketsSold: 2350, totalRevenue: "45 231,89 €" },
+    { id: "evt_1", name: "Touch Of Class NYE 2026", status: "Actif", ticketsSold: 2350, totalRevenue: "45 231,89 €" },
     { id: "evt_2", name: "Summer Fest 2025", status: "Terminé", ticketsSold: 5420, totalRevenue: "120 500,00 €" },
     { id: "evt_3", name: "Tech Conference 2025", status: "Brouillon", ticketsSold: 0, totalRevenue: "0,00 €" },
 ];

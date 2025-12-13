@@ -106,7 +106,7 @@ const content = {
         promoCodePlaceholder: "Enter code",
         promoCodeButton: "Apply",
         toastSuccessTitle: "Purchase successful!",
-        toastSuccessDescription: "Your tickets for Golden Paris NYE 2026 are confirmed. See you there!",
+        toastSuccessDescription: "Your tickets for Touch Of Class NYE 2026 are confirmed. See you there!",
         tableItem: "Table",
         menEntryItem: "Men's Entry",
         womenEntryItem: "Women's Entry",

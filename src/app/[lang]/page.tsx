@@ -74,15 +74,26 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
       </section>
 
       {/* Photo Gallery Section */}
-      <section className="relative z-10 pb-20">
+      <section className="relative z-10 pb-12">
         <PhotoGallery lang={lang} />
       </section>
 
       {/* Instagram CTA */}
-      <section className="relative z-10 pb-24">
+      <section className="relative z-10 pb-8">
         <div className="container px-4 md:px-6 mx-auto text-center">
-          <div className="inline-flex items-center gap-3 rounded-full border px-6 py-4 bg-card shadow-sm">
-            <Instagram className="h-5 w-5" />
+          <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 bg-card shadow-sm">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#FDCB58" />
+                  <stop offset="50%" stop-color="#F56040" />
+                  <stop offset="100%" stop-color="#833AB4" />
+                </linearGradient>
+              </defs>
+              <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#igGrad)"/>
+              <circle cx="12" cy="12" r="4.5" fill="#fff"/>
+              <circle cx="17" cy="7" r="1.5" fill="#fff"/>
+            </svg>
             <Link
               href={"https://www.instagram.com/la_garden_party_paris?igsh=MXc1cGhlYXZ6OWx5Ng=="}
               target="_blank"

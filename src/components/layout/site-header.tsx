@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Languages, PartyPopper } from 'lucide-react';
+import { Languages } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -42,19 +42,12 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href={`/${lang}`} className="mr-6 flex items-center space-x-2">
-          <PartyPopper className="h-6 w-6 text-accent" />
+          <img src="/favicon.ico" alt="Logo" className="h-6 w-6" />
           <span className="inline-block font-bold font-headline truncate max-w-[200px] sm:max-w-none">
             {headerContent.title}
           </span>
         </Link>
-        <nav className="flex flex-1 items-center space-x-4">
-          <Link
-            href={`/${lang}/event`}
-            className="text-sm font-medium text-foreground/60 transition-colors hover:text-foreground/80"
-          >
-            {headerContent.event}
-          </Link>
-        </nav>
+        <nav className="flex flex-1 items-center space-x-4" />
         <div className="flex items-center justify-end space-x-2 md:space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -83,11 +76,8 @@ export function SiteHeader() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="outline" size="sm" asChild>
-                <Link href="/login">{headerContent.admin}</Link>
-            </Button>
         </div>
       </div>
     </header>
   );
-}
+} 

@@ -39,7 +39,7 @@ function EventFormContent() {
 
   // In a real app, you would fetch event data here if in edit mode
   const defaultValues = isEditMode
-    ? { name: `Golden Paris NYE 2026`, description: 'La plus grande soirée du Nouvel An !', date: '2025-12-31T20:00', location: 'Grand Arena, New York', status: 'Actif' as const }
+    ? { name: `Touch Of Class NYE 2026`, description: 'La plus grande soirée du Nouvel An !', date: '2025-12-31T20:00', location: 'Grand Arena, New York', status: 'Actif' as const }
     : { name: '', description: '', date: '', location: '', status: 'Brouillon' as const };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -82,7 +82,7 @@ function EventFormContent() {
                         <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Nom de l'événement</FormLabel>
-                                <FormControl><Input placeholder="Golden Paris NYE 2026" {...field} /></FormControl>
+                                <FormControl><Input placeholder="Touch Of Class NYE 2026" {...field} /></FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}/>

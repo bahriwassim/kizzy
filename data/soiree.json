@@ -70,5 +70,13 @@
       "fr": "Réservez Votre Expérience VIP",
       "en": "Book Your VIP Experience"
     }
+  },
+  "marquee": {
+    "text": {
+      "fr": "Les prix augmenteront progressivement à partir du 15 décembre 2025.",
+      "en": "Prices will gradually increase starting December 15, 2025."
+    },
+    "speedSeconds": 45,
+    "enabled": true
   }
 }

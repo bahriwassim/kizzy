@@ -463,6 +463,28 @@ export function SeatSelection({ lang }: { lang: Locale }) {
         <CardHeader className="bg-accent/10 border-b border-accent/10">
            <CardTitle className="text-xl md:text-2xl text-accent">{pageContent.tableReservation}</CardTitle>
            <CardDescription className="text-accent/80">{pageContent.tableReservationDescription}</CardDescription>
+           <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+             <span className="inline-flex items-center gap-2">
+               <Check className="h-4 w-4 text-green-400" />
+               {lang === 'en' ? 'Secure card payment' : 'Paiement sécurisé CB'}
+             </span>
+             <span className="inline-flex items-center gap-1 ml-2">
+               <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
+                 <rect width="24" height="24" rx="4" fill="#1A1F71" />
+                 <path d="M5 15h2.2l1.1-6H6.1L5 15zM9.3 15h2l1.2-6h-2l-1.2 6zM14.5 15h1.9l2.6-6h-1.9l-2.6 6z" fill="#fff"/>
+               </svg>
+               <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
+                 <rect width="24" height="24" rx="4" fill="#261B1B" />
+                 <circle cx="10" cy="12" r="5" fill="#EB001B" />
+                 <circle cx="14" cy="12" r="5" fill="#F79E1B" opacity="0.85" />
+               </svg>
+               <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
+                 <rect width="24" height="24" rx="4" fill="#003087" />
+                 <path d="M7 7h8c2 0 3 1.2 2.6 3l-1 5c-.3 1.2-1.4 2-2.6 2H9.5l-.7 2H6.5l1.2-10c.1-1 .9-2 2.3-2z" fill="#fff"/>
+                 <path d="M9 9h7c1.5 0 2.3.8 2 2l-.8 4c-.2.8-.9 1.3-1.8 1.3h-5.6l-.8 2H7.2l1.1-8c.1-.7.7-1.3 1.7-1.3z" fill="#009CDE" opacity="0.9"/>
+               </svg>
+             </span>
+           </div>
         </CardHeader>
         <CardContent className="p-4 md:p-6 bg-[#0a0a0a]">
            {/* Plan Image */}
@@ -763,7 +785,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
       </div>
 
       {/* Steps Indicator */}
-      <div ref={stepsRef} className="mb-8 md:mb-12">
+      <div ref={stepsRef} className="sticky top-16 z-30 mb-8 md:mb-12 bg-background/80 backdrop-blur border-b border-white/10">
         <div className="flex justify-between relative">
             {/* Progress Line */}
             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-secondary -z-10 rounded-full" />
