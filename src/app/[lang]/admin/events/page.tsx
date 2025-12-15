@@ -1,16 +1,27 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import React from "react";
+import { getSupabaseBrowser } from "@/lib/supabase";
 
-const events = [
-    { id: "evt_1", name: "Touch Of Class NYE 2026", status: "Actif", ticketsSold: 2350, totalRevenue: "45 231,89 €" },
-    { id: "evt_2", name: "Summer Fest 2025", status: "Terminé", ticketsSold: 5420, totalRevenue: "120 500,00 €" },
-    { id: "evt_3", name: "Tech Conference 2025", status: "Brouillon", ticketsSold: 0, totalRevenue: "0,00 €" },
-];
+type EventRow = { id: string; name: string; status: string; tickets_sold?: number; total_revenue?: number }
 
 export default function EventsPage() {
+    const [events, setEvents] = React.useState<EventRow[]>([])
+    React.useEffect(() => {
+        (async () => {
+            try {
+                const { data } = await getSupabaseBrowser().from('events').select('id,name,status,tickets_sold,total_revenue')
+                setEvents(Array.isArray(data) ? data : [])
+            } catch {
+                setEvents([])
+            }
+        })()
+    }, [])
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-start">
@@ -39,7 +50,9 @@ export default function EventsPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {events.map((event) => (
+                            {events.length === 0 ? (
+                                <TableRow><TableCell colSpan={5} className="text-muted-foreground">Aucun événement</TableCell></TableRow>
+                            ) : events.map((event) => (
                                 <TableRow key={event.id}>
                                     <TableCell className="font-medium">{event.name}</TableCell>
                                     <TableCell>
@@ -47,8 +60,8 @@ export default function EventsPage() {
                                             {event.status}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{event.ticketsSold}</TableCell>
-                                    <TableCell>{event.totalRevenue}</TableCell>
+                                    <TableCell>{event.tickets_sold ?? 0}</TableCell>
+                                    <TableCell>{event.total_revenue ?? 0}</TableCell>
                                     <TableCell>
                                         <Button variant="ghost" size="sm" asChild>
                                             <Link href={`/admin/events/form?id=${event.id}`}>Modifier</Link>

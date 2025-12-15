@@ -1,17 +1,27 @@
+ 'use client'
+ 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import React from "react";
+import { getSupabaseBrowser } from "@/lib/supabase";
 
-const promos = [
-    { id: "promo_1", code: "NYE2026", type: "Pourcentage", value: "15%", status: "Actif", redemptions: 42 },
-    { id: "promo_2", code: "EARLYBIRD", type: "Montant Fixe", value: "50€", status: "Expiré", redemptions: 210 },
-    { id: "promo_3", code: "VIPACCESS", type: "Montant Fixe", value: "100€", status: "Programmé", redemptions: 0 },
-    { id: "promo_4", code: "LASTCHANCE", type: "Pourcentage", value: "10%", status: "Brouillon", redemptions: 0 },
-];
+type PromoRow = { id: string; code: string; type: string; value: string; status: string; redemptions?: number }
 
 export default function PromosPage() {
+    const [promos, setPromos] = React.useState<PromoRow[]>([])
+    React.useEffect(() => {
+        (async () => {
+            try {
+                const { data } = await getSupabaseBrowser().from('promos').select('id,code,type,value,status,redemptions')
+                setPromos(Array.isArray(data) ? data : [])
+            } catch {
+                setPromos([])
+            }
+        })()
+    }, [])
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-start">
@@ -41,7 +51,9 @@ export default function PromosPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {promos.map((promo) => (
+                            {promos.length === 0 ? (
+                                <TableRow><TableCell colSpan={6} className="text-muted-foreground">Aucun code promotionnel</TableCell></TableRow>
+                            ) : promos.map((promo) => (
                                 <TableRow key={promo.id}>
                                     <TableCell className="font-medium">{promo.code}</TableCell>
                                     <TableCell>{promo.type}</TableCell>
@@ -51,7 +63,7 @@ export default function PromosPage() {
                                             {promo.status}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{promo.redemptions}</TableCell>
+                                    <TableCell>{promo.redemptions ?? 0}</TableCell>
                                     <TableCell>
                                         <Button variant="ghost" size="sm" asChild>
                                             <Link href={`/admin/promos/form?id=${promo.id}`}>Modifier</Link>

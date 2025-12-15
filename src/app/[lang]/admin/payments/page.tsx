@@ -1,6 +1,7 @@
 
 'use client'
 
+import React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -30,23 +31,39 @@ const formSchema = z.object({
 export default function PaymentsPage() {
   const { toast } = useToast()
 
-  // In a real app, you would fetch these values from a secure location.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      publicKey: 'pk_test_...',
-      secretKey: 'sk_test_...',
-      webhookSecret: 'whsec_...',
-      isLiveMode: false,
-    },
+    defaultValues: { publicKey: '', secretKey: '', webhookSecret: '', isLiveMode: false },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    toast({
-      title: "Paramètres de paiement enregistrés",
-      description: "Vos paramètres Stripe ont été mis à jour.",
+  React.useEffect(() => {
+    fetch('/api/payments/config', { cache: 'no-store' })
+      .then(res => res.json())
+      .then(cfg => form.reset({
+        publicKey: cfg.public_key || '',
+        secretKey: cfg.secret_key || '',
+        webhookSecret: cfg.webhook_secret || '',
+        isLiveMode: !!cfg.is_live_mode,
+      }))
+      .catch(() => {})
+  }, [])
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { getSupabaseBrowser } = await import('@/lib/supabase')
+    const supabase = getSupabaseBrowser()
+    const { data } = await supabase.auth.getSession()
+    const token = data.session?.access_token || (typeof window !== 'undefined' && window.localStorage.getItem('adminOverride') === 'true' ? 'OVERRIDE' : undefined)
+    const res = await fetch('/api/payments/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+      body: JSON.stringify(values),
     })
+    if (res.ok) {
+      toast({ title: "Paramètres de paiement enregistrés", description: "Vos paramètres Stripe ont été mis à jour." })
+    } else {
+      const j = await res.json().catch(() => ({} as any))
+      toast({ variant: 'destructive', title: "Échec de l’enregistrement", description: j?.error || 'Veuillez réessayer.' })
+    }
   }
 
   return (

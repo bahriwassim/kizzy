@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { type Locale } from '@/i18n-config'
-import { Instagram, ShieldCheck, Phone, PartyPopper } from 'lucide-react'
+import { Instagram, ShieldCheck, PartyPopper } from 'lucide-react'
 
 type Contact = { phone: string; instagram: string }
 
@@ -50,17 +50,21 @@ export function SiteFooter({ lang }: { lang: Locale }) {
           <div className="space-y-4">
             <h4 className="text-sm font-semibold tracking-wider uppercase">{t.contact}</h4>
             <div className="space-y-2">
-              <a href={`tel:+33664010736`} className="flex items-center gap-2 text-sm hover:text-foreground/80">
-                <Phone className="h-4 w-4 text-muted-foreground" /> HEENCS +33 6 64 01 07 36
+              <a href={`https://wa.me/33664010736`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:text-foreground/80">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.84 14.93L2 22l5.2-1.36A10 10 0 1 0 12 2Zm5.34 14.4c-.27.76-1.6 1.49-2.23 1.58c-.6.1-1.37.1-2.24-.14a9.91 9.91 0 0 1-3.26-1.96a11.47 11.47 0 0 1-3.42-4.37c-.35-.84-.35-1.55-.25-2.11c.1-.5.47-1.2.93-1.44c.25-.12.57-.08.74.12c.2.24.67.83.73 1c.1.2.1.36 0 .57c-.1.2-.2.46-.32.6c-.15.16-.3.35-.13.67c.17.35.76 1.26 1.63 2.05c1.12 1 2.05 1.32 2.4 1.47c.26.1.43.08.58-.05c.18-.17.4-.44.5-.69c.12-.25.26-.3.44-.24c.15.06.98.46 1.15.54c.16.08.28.12.32.18c.1.15.1.83-.17 1.58Z"/></svg>
+                HEENCS WhatsApp +33 6 64 01 07 36
               </a>
-              <a href={`tel:+33621604369`} className="flex items-center gap-2 text-sm hover:text-foreground/80">
-                <Phone className="h-4 w-4 text-muted-foreground" /> JOE +33 6 21 60 43 69
+              <a href={`https://wa.me/33621604369`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:text-foreground/80">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.84 14.93L2 22l5.2-1.36A10 10 0 1 0 12 2Zm5.34 14.4c-.27.76-1.6 1.49-2.23 1.58c-.6.1-1.37.1-2.24-.14a9.91 9.91 0 0 1-3.26-1.96a11.47 11.47 0 0 1-3.42-4.37c-.35-.84-.35-1.55-.25-2.11c.1-.5.47-1.2.93-1.44c.25-.12.57-.08.74.12c.2.24.67.83.73 1c.1.2.1.36 0 .57c-.1.2-.2.46-.32.6c-.15.16-.3.35-.13.67c.17.35.76 1.26 1.63 2.05c1.12 1 2.05 1.32 2.4 1.47c.26.1.43.08.58-.05c.18-.17.4-.44.5-.69c.12-.25.26-.3.44-.24c.15.06.98.46 1.15.54c.16.08.28.12.32.18c.1.15.1.83-.17 1.58Z"/></svg>
+                JOE WhatsApp +33 6 21 60 43 69
               </a>
-              <a href={`tel:+33695132689`} className="flex items-center gap-2 text-sm hover:text-foreground/80">
-                <Phone className="h-4 w-4 text-muted-foreground" /> NICK +33 6 95 13 26 89
+              <a href={`https://wa.me/33695132689`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:text-foreground/80">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.84 14.93L2 22l5.2-1.36A10 10 0 1 0 12 2Zm5.34 14.4c-.27.76-1.6 1.49-2.23 1.58c-.6.1-1.37.1-2.24-.14a9.91 9.91 0 0 1-3.26-1.96a11.47 11.47 0 0 1-3.42-4.37c-.35-.84-.35-1.55-.25-2.11c.1-.5.47-1.2.93-1.44c.25-.12.57-.08.74.12c.2.24.67.83.73 1c.1.2.1.36 0 .57c-.1.2-.2.46-.32.6c-.15.16-.3.35-.13.67c.17.35.76 1.26 1.63 2.05c1.12 1 2.05 1.32 2.4 1.47c.26.1.43.08.58-.05c.18-.17.4-.44.5-.69c.12-.25.26-.3.44-.24c.15.06.98.46 1.15.54c.16.08.28.12.32.18c.1.15.1.83-.17 1.58Z"/></svg>
+                NICK WhatsApp +33 6 95 13 26 89
               </a>
-              <a href={`tel:+33651247368`} className="flex items-center gap-2 text-sm hover:text-foreground/80">
-                <Phone className="h-4 w-4 text-muted-foreground" /> KIZZY +33 6 51 24 73 68
+              <a href={`https://wa.me/33651247368`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:text-foreground/80">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.84 14.93L2 22l5.2-1.36A10 10 0 1 0 12 2Zm5.34 14.4c-.27.76-1.6 1.49-2.23 1.58c-.6.1-1.37.1-2.24-.14a9.91 9.91 0 0 1-3.26-1.96a11.47 11.47 0 0 1-3.42-4.37c-.35-.84-.35-1.55-.25-2.11c.1-.5.47-1.2.93-1.44c.25-.12.57-.08.74.12c.2.24.67.83.73 1c.1.2.1.36 0 .57c-.1.2-.2.46-.32.6c-.15.16-.3.35-.13.67c.17.35.76 1.26 1.63 2.05c1.12 1 2.05 1.32 2.4 1.47c.26.1.43.08.58-.05c.18-.17.4-.44.5-.69c.12-.25.26-.3.44-.24c.15.06.98.46 1.15.54c.16.08.28.12.32.18c.1.15.1.83-.17 1.58Z"/></svg>
+                KIZZY WhatsApp +33 6 51 24 73 68
               </a>
             </div>
           </div>

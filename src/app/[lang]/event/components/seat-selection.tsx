@@ -487,13 +487,13 @@ export function SeatSelection({ lang }: { lang: Locale }) {
            </div>
         </CardHeader>
         <CardContent className="p-4 md:p-6 bg-[#0a0a0a]">
-           {/* Plan Image */}
-           <div className="relative w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black">
+          {/* Plan Image */}
+          <div className="relative w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black">
               <Image 
-                src="/floor.png" 
-                alt="Floor Plan" 
-                fill 
-                className="object-contain"
+               src="/plan.jpeg" 
+               alt="Floor Plan" 
+               fill 
+               className="object-contain"
               />
            </div>
 
@@ -767,16 +767,16 @@ export function SeatSelection({ lang }: { lang: Locale }) {
         {/* Golden orbs for Table mode */}
         {bookingType !== 'simple' && (
            <>
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[100px] animate-pulse duration-[4000ms]" />
-            <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-yellow-600/5 rounded-full blur-[120px] animate-pulse duration-[7000ms]" />
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '4000ms' }} />
+            <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-yellow-600/5 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '7000ms' }} />
            </>
         )}
         
         {/* Purple/Blue orbs for Simple mode */}
         {bookingType === 'simple' && (
             <>
-             <div className="absolute top-1/3 right-1/3 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] animate-pulse duration-[3000ms]" />
-             <div className="absolute bottom-1/3 left-1/3 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] animate-pulse duration-[5000ms]" />
+             <div className="absolute top-1/3 right-1/3 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '3000ms' }} />
+             <div className="absolute bottom-1/3 left-1/3 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '5000ms' }} />
             </>
         )}
         

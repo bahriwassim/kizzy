@@ -10,6 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Locale } from '@/i18n-config'
+import { useToast } from '@/hooks/use-toast'
+import { getSupabaseBrowser } from '@/lib/supabase'
 
 const perkSchema = z.object({ text: z.string().min(1) })
 const schema = z.object({
@@ -51,8 +53,11 @@ const schema = z.object({
 })
 
 export default function AdminSoireePage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { toast } = useToast()
   const [langState, setLangState] = useState<Locale>('fr')
   useEffect(() => { params.then(p => setLangState(p.lang)) }, [params])
+  const [flyerFile, setFlyerFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -125,6 +130,20 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
   }, [langState])
 
   const onSubmit = (values: z.infer<typeof schema>) => {
+    const normalizePublicPath = (p: string) => {
+      if (!p) return p
+      const s = p.replace(/\\/g, '/')
+      if (s.startsWith('/d:/') || s.includes('/public/')) {
+        const idx = s.indexOf('/public/')
+        if (idx >= 0) {
+          const rest = s.slice(idx + '/public/'.length)
+          return `/${rest}`
+        }
+        const base = s.split('/').pop() || s
+        return `/${base}`
+      }
+      return s
+    }
     const payload = {
       hero: {
         title: { fr: values.heroTitleFr, en: values.heroTitleEn },
@@ -132,7 +151,7 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
         videoId: values.heroVideoId
       },
       media: {
-        flyerImageUrl: values.flyerImageUrl,
+        flyerImageUrl: normalizePublicPath(values.flyerImageUrl),
         carouselVideoIds: values.carouselVideoIds.split(',').map(s => s.trim()).filter(Boolean)
       },
       contact: { phone: values.phone || '', instagram: values.instagram || '' },
@@ -159,7 +178,48 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
         buttonText: { fr: values.buttonTextFr, en: values.buttonTextEn }
       }
     }
-    fetch('/api/soiree', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    import('@/lib/supabase').then(async ({ getSupabaseBrowser }) => {
+      const supabase = getSupabaseBrowser()
+      const { data } = await supabase.auth.getSession()
+      const token = data.session?.access_token || (typeof window !== 'undefined' && window.localStorage.getItem('adminOverride') === 'true' ? 'OVERRIDE' : undefined)
+      const res = await fetch('/api/soiree', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload)
+      })
+      if (res.ok) {
+        toast({ title: 'Configuration enregistrée', description: 'Les changements ont été sauvegardés.' })
+      } else {
+        const j = await res.json().catch(() => ({} as any))
+        toast({ variant: 'destructive', title: 'Échec de l’enregistrement', description: j?.error || 'Veuillez réessayer.' })
+      }
+    })
+  }
+
+  async function uploadFlyer() {
+    if (!flyerFile) return
+    setUploading(true)
+    try {
+      const { getSupabaseBrowser } = await import('@/lib/supabase')
+      const supabase = getSupabaseBrowser()
+      try {
+        const { data } = await supabase.auth.getSession()
+        const token = data.session?.access_token || (typeof window !== 'undefined' && window.localStorage.getItem('adminOverride') === 'true' ? 'OVERRIDE' : undefined)
+        if (token) {
+          await fetch('/api/storage/setup', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } })
+        }
+      } catch {}
+      const path = `flyers/${Date.now()}-${flyerFile.name}`
+      const { error } = await supabase.storage.from('media').upload(path, flyerFile, { upsert: false })
+      if (error) throw error
+      const { data: pub } = supabase.storage.from('media').getPublicUrl(path)
+      form.setValue('flyerImageUrl', pub.publicUrl || '')
+    } finally {
+      setUploading(false)
+    }
   }
 
   return (
@@ -220,6 +280,12 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
                   <FormLabel>URL du flyer</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
+                  <div className="mt-2 flex items-center gap-2">
+                    <Input type="file" accept="image/*" onChange={(e) => setFlyerFile(e.target.files?.[0] || null)} />
+                    <Button type="button" onClick={uploadFlyer} disabled={uploading || !flyerFile}>
+                      {uploading ? 'Upload...' : 'Uploader'}
+                    </Button>
+                  </div>
                 </FormItem>
               )} />
           <FormField control={form.control} name="carouselVideoIds" render={({ field }) => (

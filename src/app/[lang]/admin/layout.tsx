@@ -23,6 +23,7 @@ import {
   Ticket,
 } from 'lucide-react';
 import { Locale } from '@/i18n-config';
+import { RequireAuth } from '@/components/auth/require-auth';
 
 const menuItems = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
@@ -33,6 +34,7 @@ const menuItems = [
   { href: '/admin/promos', icon: Percent, label: 'Codes Promo' },
   { href: '/admin/emails', icon: Mails, label: 'E-mails' },
   { href: '/admin/payments', icon: CreditCard, label: 'Paiements' },
+  { href: '/admin/payments/workbench', icon: CreditCard, label: 'Stripe Workbench' },
 ];
 
 export default async function AdminLayout({
@@ -79,7 +81,11 @@ export default async function AdminLayout({
                 <h1 className="font-headline text-2xl">Backoffice</h1>
             </div>
         </header>
-        <main className="flex-1 p-4 sm:px-6 sm:py-0">{children}</main>
+        <main className="flex-1 p-4 sm:px-6 sm:py-0">
+          <RequireAuth>
+            {children}
+          </RequireAuth>
+        </main>
       </SidebarInset>
     </SidebarProvider>
     </div>

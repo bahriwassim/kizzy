@@ -90,7 +90,7 @@ const content = {
         emailPlaceholder: "you@example.com",
         phoneLabel: "Phone Number",
         phonePlaceholder: "+1 234 567 890",
-        paymentMethodLegend: "Payment Method (Demo)",
+        paymentMethodLegend: "Payment Method",
         cardNameLabel: "Name on Card",
         cardNamePlaceholder: "John Doe",
         cardNumberLabel: "Card Number",
@@ -155,17 +155,37 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
   const [phoneCode, setPhoneCode] = useState('+33')
   const phonePlaceholder = useMemo(() => (lang === 'en' ? '+1 234 567 890' : '+33 6 12 34 56 78'), [lang])
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log({...values, orderDetails: checkoutData}); 
-    toast({
-      title: pageContent.toastSuccessTitle,
-      description: pageContent.toastSuccessDescription,
-    });
-    
-    // Clear session storage after successful purchase
-    sessionStorage.removeItem('checkoutData');
-    
-    router.push(`/${lang}/confirmation`);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lang,
+          customer: { email: values.email, name: values.fullName, phone: values.phone },
+          order: {
+            selectedSeats,
+            simpleEntries,
+            totalPrice,
+          },
+        }),
+      })
+      if (!res.ok) {
+        throw new Error('Payment initialization failed')
+      }
+      const data = await res.json()
+      if (data?.url) {
+        window.location.href = data.url as string
+      } else {
+        throw new Error('No checkout URL returned')
+      }
+    } catch (e) {
+      toast({
+        title: 'Erreur de paiement',
+        description: 'Impossible de démarrer le paiement. Réessayez plus tard.',
+        variant: 'destructive',
+      })
+    }
   }
 
   if (!isMounted) return null;
