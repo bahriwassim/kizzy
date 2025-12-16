@@ -6,21 +6,18 @@ import { Button } from './button'
 import { cn } from '@/lib/utils'
 
 export function CookieConsent({ lang = 'fr' }: { lang?: 'fr' | 'en' }) {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('cookieConsent')
+      const stored = localStorage.getItem('legalBannerDismissed')
       setVisible(!stored)
     } catch {}
   }, [])
 
-  const accept = () => {
+  const dismiss = () => {
     try {
-      localStorage.setItem('cookieConsent', 'true')
-    } catch {}
-    try {
-      window.dispatchEvent(new Event('cookieConsentAccepted'))
+      localStorage.setItem('legalBannerDismissed', 'true')
     } catch {}
     setVisible(false)
   }
@@ -29,16 +26,14 @@ export function CookieConsent({ lang = 'fr' }: { lang?: 'fr' | 'en' }) {
 
   const text = lang === 'en'
     ? {
-        title: 'Cookies and legal terms',
-        desc: 'We use cookies to improve your experience. By accepting, you agree to our terms.',
-        accept: 'Accept',
-        legal: 'Terms of Sale & Use',
+        title: 'Legal',
+        cgv: 'Terms of Sale',
+        cgu: 'Terms of Use',
       }
     : {
-        title: 'Cookies et mentions légales',
-        desc: "Nous utilisons des cookies pour améliorer votre expérience. En acceptant, vous acceptez nos conditions.",
-        accept: 'Accepter',
-        legal: 'CGV / CGU',
+        title: 'Mentions légales',
+        cgv: 'CGV',
+        cgu: 'CGU',
       }
 
   return (
@@ -47,12 +42,13 @@ export function CookieConsent({ lang = 'fr' }: { lang?: 'fr' | 'en' }) {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <p className="font-headline text-sm md:text-base">{text.title}</p>
-            <p className="text-xs md:text-sm text-muted-foreground">
-              {text.desc} <Link href={`/${lang}/legal`} className="underline">{text.legal}</Link>
-            </p>
+            <div className="text-xs md:text-sm text-muted-foreground flex gap-3">
+              <Link href={`/${lang}/legal`} className="underline">{text.cgv}</Link>
+              <Link href={`/${lang}/legal`} className="underline">{text.cgu}</Link>
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" className="bg-accent text-accent-foreground" onClick={accept}>{text.accept}</Button>
+            <Button size="sm" variant="outline" onClick={dismiss}>{lang === 'en' ? 'Close' : 'Fermer'}</Button>
           </div>
         </div>
       </div>
