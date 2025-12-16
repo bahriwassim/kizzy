@@ -4,17 +4,12 @@ import { useEffect, useState } from 'react'
 import Script from 'next/script'
 
 export function MetaPixel() {
-  const [consent, setConsent] = useState(false)
-  const [pixelId, setPixelId] = useState<string>('')
-  const [enabled, setEnabled] = useState<boolean>(false)
+  const [consent, setConsent] = useState(true)
+  const [pixelId, setPixelId] = useState<string>('1231682541699993')
+  const [enabled, setEnabled] = useState<boolean>(true)
 
   useEffect(() => {
-    try {
-      setConsent(localStorage.getItem('cookieConsent') === 'true')
-    } catch {}
-    const handler = () => setConsent(true)
-    window.addEventListener('cookieConsentAccepted', handler)
-    return () => window.removeEventListener('cookieConsentAccepted', handler)
+    setConsent(true)
   }, [])
 
   useEffect(() => {
@@ -22,23 +17,26 @@ export function MetaPixel() {
       try {
         const res = await fetch('/api/soiree?lang=fr', { cache: 'no-store' })
         const j = await res.json()
-        setPixelId(j?.analytics?.facebookPixelId || '')
-        setEnabled(!!j?.analytics?.facebookPixelEnabled)
+        if (j?.analytics?.facebookPixelId) {
+          setPixelId(j.analytics.facebookPixelId)
+        }
+        if (typeof j?.analytics?.facebookPixelEnabled === 'boolean') {
+          setEnabled(!!j.analytics.facebookPixelEnabled)
+        }
       } catch {}
     }
     loadCfg()
   }, [])
 
-  if (!consent || !enabled || !pixelId) return null
+  if (!enabled || !pixelId) return null
 
   const initCode = `
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){(n.callMethod)?
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${pixelId}');
-fbq('track','PageView');
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${pixelId}');
+fbq('track', 'PageView');
 `
 
   return (
@@ -52,4 +50,3 @@ fbq('track','PageView');
     </>
   )
 }
-

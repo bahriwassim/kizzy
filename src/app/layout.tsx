@@ -5,7 +5,6 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { cn } from '@/lib/utils';
 import { i18n } from '@/i18n-config';
 import { Playfair_Display, Montserrat } from 'next/font/google';
-import { CookieConsent } from '@/components/ui/cookie-consent';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
 
@@ -66,7 +65,6 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter lang={(params.lang as 'fr' | 'en') ?? 'fr'} />
         </div>
-        <CookieConsent lang={(params.lang as 'fr' | 'en') ?? 'fr'} />
         <MetaPixel />
         <Toaster />
       </body>
