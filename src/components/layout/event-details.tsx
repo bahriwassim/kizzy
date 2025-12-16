@@ -12,6 +12,7 @@ type SoireeConfig = {
     intro: string
     arrival: { title: string; desc: string; perks: { text: string }[] }
     party: { title: string; desc: string }
+    countdownTitle?: string
     countdown: string
     outro: string
     subOutro: string
@@ -67,7 +68,7 @@ export function EventDetails({ lang, cfg }: { lang: Locale, cfg: SoireeConfig })
 
                         <div className="relative pl-8 border-l-2 border-accent/30 hover:border-accent transition-colors duration-300">
                              <h3 className="text-3xl font-headline font-bold text-foreground mb-4">
-                                Countdown & Show
+                                {cfg.details.countdownTitle || 'Countdown & Show'}
                             </h3>
                             <p className="text-muted-foreground text-lg italic font-medium">
                                 {cfg.details.countdown}

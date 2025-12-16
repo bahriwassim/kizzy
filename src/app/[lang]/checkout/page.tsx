@@ -20,10 +20,6 @@ const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   phone: z.string().min(10, { message: 'Please enter a valid phone number.' }),
-  cardName: z.string().min(2, { message: 'Name on card is required.' }),
-  cardNumber: z.string().regex(/^\d{16}$/, { message: 'Card number must be 16 digits.' }),
-  cardExpiry: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, { message: "Expiry must be in MM/YY format." }),
-  cardCvc: z.string().regex(/^\d{3,4}$/, { message: 'CVC must be 3 or 4 digits.' }),
   promoCode: z.string().optional(),
 });
 
@@ -46,8 +42,8 @@ const content = {
     fr: {
         pageTitle: "Finalisez Votre Achat",
         pageDescription: "Vous n'êtes plus qu'à une étape de la célébration de l'année.",
-        paymentDetailsTitle: "Détails de Paiement",
-        paymentDetailsDescription: "Saisissez vos informations personnelles et de paiement.",
+        paymentDetailsTitle: "Paiement via Stripe",
+        paymentDetailsDescription: "Saisissez vos informations, puis payez sur Stripe (Apple Pay / Google Pay / Carte).",
         contactInfoLegend: "Informations de Contact",
         fullNameLabel: "Nom Complet",
         fullNamePlaceholder: "Jean Dupont",
@@ -55,16 +51,8 @@ const content = {
         emailPlaceholder: "vous@exemple.com",
         phoneLabel: "Numéro de téléphone",
         phonePlaceholder: "06 12 34 56 78",
-        paymentMethodLegend: "Moyen de Paiement (Démo)",
-        cardNameLabel: "Nom sur la Carte",
-        cardNamePlaceholder: "Jean Dupont",
-        cardNumberLabel: "Numéro de Carte",
-        cardNumberPlaceholder: "•••• •••• •••• ••••",
-        cardExpiryLabel: "Expiration (MM/AA)",
-        cardExpiryPlaceholder: "MM/AA",
-        cardCvcLabel: "CVC",
-        cardCvcPlaceholder: "123",
-        submitButton: "Confirmer l'Achat",
+        paymentMethodLegend: "Paiement",
+        submitButton: "Payer maintenant via Stripe",
         orderSummaryTitle: "Résumé de la Commande",
         totalLabel: "Total",
         promoCodeTitle: "Code Promotionnel",
@@ -81,8 +69,8 @@ const content = {
     en: {
         pageTitle: "Finalize Your Purchase",
         pageDescription: "You are just one step away from the celebration of the year.",
-        paymentDetailsTitle: "Payment Details",
-        paymentDetailsDescription: "Enter your personal and payment information.",
+        paymentDetailsTitle: "Pay with Stripe",
+        paymentDetailsDescription: "Enter your info, then pay on Stripe (Apple Pay / Google Pay / Card).",
         contactInfoLegend: "Contact Information",
         fullNameLabel: "Full Name",
         fullNamePlaceholder: "John Doe",
@@ -90,16 +78,8 @@ const content = {
         emailPlaceholder: "you@example.com",
         phoneLabel: "Phone Number",
         phonePlaceholder: "+1 234 567 890",
-        paymentMethodLegend: "Payment Method",
-        cardNameLabel: "Name on Card",
-        cardNamePlaceholder: "John Doe",
-        cardNumberLabel: "Card Number",
-        cardNumberPlaceholder: "•••• •••• •••• ••••",
-        cardExpiryLabel: "Expiration (MM/YY)",
-        cardExpiryPlaceholder: "MM/YY",
-        cardCvcLabel: "CVC",
-        cardCvcPlaceholder: "123",
-        submitButton: "Confirm Purchase",
+        paymentMethodLegend: "Payment",
+        submitButton: "Pay now with Stripe",
         orderSummaryTitle: "Order Summary",
         totalLabel: "Total",
         promoCodeTitle: "Promotional Code",
@@ -144,10 +124,6 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
       fullName: '',
       email: '',
       phone: '',
-      cardName: '',
-      cardNumber: '',
-      cardExpiry: '',
-      cardCvc: '',
       promoCode: '',
     },
   });
@@ -256,38 +232,12 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
                 </fieldset>
                 
                 <Separator />
-
                 <fieldset className="space-y-4">
                   <legend className="font-headline text-lg mb-2">{pageContent.paymentMethodLegend}</legend>
-                   <FormField control={form.control} name="cardName" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{pageContent.cardNameLabel}</FormLabel>
-                      <FormControl><Input placeholder={pageContent.cardNamePlaceholder} {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}/>
-                   <FormField control={form.control} name="cardNumber" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{pageContent.cardNumberLabel}</FormLabel>
-                      <FormControl><Input placeholder={pageContent.cardNumberPlaceholder} {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}/>
-                  <div className="flex gap-4">
-                    <FormField control={form.control} name="cardExpiry" render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>{pageContent.cardExpiryLabel}</FormLabel>
-                        <FormControl><Input placeholder={pageContent.cardExpiryPlaceholder} {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}/>
-                    <FormField control={form.control} name="cardCvc" render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>{pageContent.cardCvcLabel}</FormLabel>
-                        <FormControl><Input placeholder={pageContent.cardCvcPlaceholder} {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}/>
+                  <div className="text-sm text-muted-foreground">
+                    {lang === 'fr'
+                      ? 'Vous serez redirigé vers Stripe pour payer (Apple Pay, Google Pay ou carte).'
+                      : 'You will be redirected to Stripe to pay (Apple Pay, Google Pay or card).'}
                   </div>
                 </fieldset>
                 <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">{pageContent.submitButton}</Button>

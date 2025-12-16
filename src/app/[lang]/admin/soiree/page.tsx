@@ -42,6 +42,8 @@ const schema = z.object({
   partyTitleEn: z.string().min(1),
   partyDescFr: z.string().min(1),
   partyDescEn: z.string().min(1),
+  countdownTitleFr: z.string().min(1),
+  countdownTitleEn: z.string().min(1),
   countdownFr: z.string().min(1),
   countdownEn: z.string().min(1),
   outroFr: z.string().min(1),
@@ -78,6 +80,7 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
       perksFr: [{ text: '' }], perksEn: [{ text: '' }],
       partyTitleFr: '', partyTitleEn: '',
       partyDescFr: '', partyDescEn: '',
+      countdownTitleFr: '', countdownTitleEn: '',
       countdownFr: '', countdownEn: '',
       outroFr: '', outroEn: '',
       subOutroFr: '', subOutroEn: '',
@@ -117,6 +120,8 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
           partyTitleEn: cfg.details.party.title,
           partyDescFr: cfg.details.party.desc,
           partyDescEn: cfg.details.party.desc,
+          countdownTitleFr: cfg.details.countdownTitle || '',
+          countdownTitleEn: cfg.details.countdownTitle || '',
           countdownFr: cfg.details.countdown,
           countdownEn: cfg.details.countdown,
           outroFr: cfg.details.outro,
@@ -172,6 +177,7 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
           title: { fr: values.partyTitleFr, en: values.partyTitleEn },
           desc: { fr: values.partyDescFr, en: values.partyDescEn }
         },
+        countdownTitle: { fr: values.countdownTitleFr, en: values.countdownTitleEn },
         countdown: { fr: values.countdownFr, en: values.countdownEn },
         outro: { fr: values.outroFr, en: values.outroEn },
         subOutro: { fr: values.subOutroFr, en: values.subOutroEn },
@@ -470,6 +476,20 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
                 <FormItem>
                   <FormLabel>Countdown (EN)</FormLabel>
                   <FormControl><Textarea {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="countdownTitleFr" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Titre Countdown (FR)</FormLabel>
+                  <FormControl><Input {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="countdownTitleEn" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Titre Countdown (EN)</FormLabel>
+                  <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

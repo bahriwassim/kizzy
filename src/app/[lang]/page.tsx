@@ -95,12 +95,12 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
               <circle cx="17" cy="7" r="1.5" fill="#fff"/>
             </svg>
             <Link
-              href={"https://www.instagram.com/la_garden_party_paris?igsh=MXc1cGhlYXZ6OWx5Ng=="}
+              href={"https://www.instagram.com/la_garden_party_paris"}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold underline"
             >
-              {lang === 'fr' ? 'voir nos évènements et nous suivre sur Instagram' : 'see our events and follow us on Instagram'}
+              {lang === 'fr' ? 'Voir nos évènements et nous suivre sur Instagram' : 'See our events and follow us on Instagram'}
             </Link>
           </div>
         </div>
@@ -112,9 +112,7 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
           <h3 className="text-2xl md:text-3xl font-bold">
             {lang === 'fr' ? 'Réservez votre table maintenant' : 'Book your table now'}
           </h3>
-          <p className="text-muted-foreground">
-            {lang === 'fr' ? 'Choisissez votre expérience et profitez d’une nuit inoubliable.' : 'Choose your experience and enjoy an unforgettable night.'}
-          </p>
+        
           <Button asChild size="lg" className="rounded-full px-8 bg-yellow-500 text-black hover:bg-yellow-600 shadow-lg shadow-yellow-500/30">
             <Link href={`/${lang}/event`}>
               {lang === 'fr' ? 'Réserver' : 'Book Now'}

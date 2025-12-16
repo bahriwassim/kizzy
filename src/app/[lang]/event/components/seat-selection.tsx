@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { type Locale } from '@/i18n-config';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 type SeatStatus = 'available' | 'unavailable' | 'selected';
 type SeatTier = 'STANDARD' | 'PREMIUM' | 'VIP' | 'PLATINIUM' | 'ULTRA VIP' | 'PRESTIGE';
@@ -205,6 +206,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingType, setBookingType] = useState<'table' | 'simple' | null>(null);
   const stepsRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   
   const [seats, setSeats] = useState<Seat[]>(generateSeats());
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -217,8 +219,8 @@ export function SeatSelection({ lang }: { lang: Locale }) {
 
   useEffect(() => {
     try {
-      if (stepsRef.current) {
-        stepsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (contentRef.current) {
+        contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -515,44 +517,46 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                             <div>
                                 <h3 className={cn("font-headline text-lg tracking-wider", tierColors[tier])}>{tier}</h3>
                             </div>
-                            <div className="text-right">
-                                <div className="font-bold text-xl">{sampleSeat.price}€</div>
-                                {availableCount === 0 && (
-                                  <div className="text-xs mt-1 text-red-500 font-semibold">Complet</div>
-                                )}
-                            </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between mt-4">
-                            <span className="text-xs text-white">
-                                {pageContent.seatDescription(sampleSeat.capacity)}
-                            </span>
-                            <div className="flex items-center gap-3">
-                                <Button 
-                                    variant="outline" 
-                                    size="icon" 
-                                    className="h-8 w-8 rounded-full border-white/20 hover:bg-white/10"
-                                    onClick={() => handleTierChange(tier, -1)}
-                                    disabled={selectedCount === 0}
-                                >
-                                    -
-                                </Button>
-                                <span className="font-bold w-6 text-center text-lg">{selectedCount}</span>
-                                <Button 
-                                    variant="outline" 
-                                    size="icon" 
-                                    className="h-8 w-8 rounded-full border-white/20 hover:bg-white/10"
-                                    onClick={() => handleTierChange(tier, 1)}
-                                    disabled={availableCount === 0}
-                                >
-                                    +
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                 )
-             })}
-          </div>
+                         <div className="text-right">
+                             <div className="font-bold text-xl">{sampleSeat.price}€</div>
+                             {availableCount === 0 && (
+                               <div className="text-xs mt-1 text-red-500 font-semibold">Complet</div>
+                             )}
+                         </div>
+                     </div>
+                     
+                     <div className="flex items-center justify-between mt-4">
+                         <span className="text-xs text-white">
+                             {pageContent.seatDescription(sampleSeat.capacity)}
+                         </span>
+                         {availableCount > 0 && (
+                           <div className="flex items-center gap-3">
+                             <Button 
+                               variant="outline" 
+                               size="icon" 
+                               className="h-8 w-8 rounded-full border-white/20 hover:bg-white/10"
+                               onClick={() => handleTierChange(tier, -1)}
+                               disabled={selectedCount === 0}
+                             >
+                               -
+                             </Button>
+                             <span className="font-bold w-6 text-center text-lg">{selectedCount}</span>
+                             <Button 
+                               variant="outline" 
+                               size="icon" 
+                               className="h-8 w-8 rounded-full border-white/20 hover:bg-white/10"
+                               onClick={() => handleTierChange(tier, 1)}
+                               disabled={availableCount === 0}
+                             >
+                               +
+                             </Button>
+                           </div>
+                         )}
+                     </div>
+                 </div>
+             )
+         })}
+         </div>
 
            
         </CardContent>
@@ -583,20 +587,39 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                 <div className="font-headline font-bold">Table {seat.label} ({seat.tier}) — {seat.price}€</div>
                 <div className={cn('text-sm', satisfied ? 'text-green-400' : 'text-accent')}>{sum}€ / {seat.price}€</div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {BOTTLE_OPTIONS.map(bottle => {
-                  const count = (selectedBottlesBySeat[seat.id]?.[bottle.id] || 0)
-                  return (
-                    <div key={bottle.id} className="flex items-center justify-between p-3 border border-white/5 rounded-lg bg-background/40">
-                      <span className="text-sm font-medium">{bottle.name} — {bottle.price}€</span>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleSeatBottleChange(seat.id, bottle.id, -1, seat.price)} disabled={onSiteSeat[seat.id] || count === 0}>-</Button>
-                        <span className="w-6 text-center font-bold">{count}</span>
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleSeatBottleChange(seat.id, bottle.id, 1, seat.price)} disabled={onSiteSeat[seat.id] || (sum + bottle.price > seat.price)}>+</Button>
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="relative">
+                <Carousel className="w-full">
+                  <CarouselContent className="py-2">
+                    {BOTTLE_OPTIONS.map(bottle => {
+                      const count = (selectedBottlesBySeat[seat.id]?.[bottle.id] || 0)
+                      const disabled = onSiteSeat[seat.id] || (sum + bottle.price > seat.price)
+                      return (
+                        <CarouselItem key={bottle.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                          <button
+                            onClick={() => !disabled && handleSeatBottleChange(seat.id, bottle.id, 1, seat.price)}
+                            disabled={disabled}
+                            className={cn(
+                              'w-full p-3 border border-white/5 rounded-lg bg-background/40 text-left transition-all',
+                              disabled && 'opacity-50 cursor-not-allowed',
+                              count > 0 && 'ring-2 ring-accent/50'
+                            )}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium">{bottle.name} — {bottle.price}€</span>
+                              {count > 0 && (
+                                <span className="text-xs font-bold px-2 py-0.5 rounded bg-accent/20 text-accent">
+                                  {count}
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        </CarouselItem>
+                      )
+                    })}
+                  </CarouselContent>
+                  <CarouselPrevious className="bg-background/70" />
+                  <CarouselNext className="bg-background/70" />
+                </Carousel>
               </div>
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
@@ -815,7 +838,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
         </div>
       </div>
 
-      <div className="mb-8">
+      <div ref={contentRef} className="mb-8">
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}

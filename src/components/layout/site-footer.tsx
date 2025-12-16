@@ -38,7 +38,7 @@ export function SiteFooter({ lang }: { lang: Locale }) {
                 : 'Une soirée de Nouvel An prestigieuse, sécurisée et inoubliable à Paris.'}
             </p>
             <Link
-              href={"https://www.instagram.com/la_garden_party_paris?igsh=MXc1cGhlYXZ6OWx5Ng=="}
+              href={"https://www.instagram.com/la_garden_party_paris"}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm rounded-full border px-4 py-2 hover:bg-white/10"

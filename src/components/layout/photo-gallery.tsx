@@ -30,7 +30,7 @@ export function PhotoGallery({ lang }: { lang: Locale }) {
     }));
 
     return (
-        <section className="py-24">
+        <section className="pt-10 pb-20">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="text-center mb-16 space-y-4">
                     <h2 className="text-4xl md:text-5xl font-bold font-headline tracking-tighter">{pageContent.title}</h2>

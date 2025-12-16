@@ -38,6 +38,7 @@ export async function GET(request: Request) {
           title: (party.title?.[lang] ?? party.title?.fr) ?? '',
           desc: (party.desc?.[lang] ?? party.desc?.fr) ?? ''
         },
+        countdownTitle: (details.countdownTitle?.[lang] ?? details.countdownTitle?.fr) ?? '',
         countdown: (details.countdown?.[lang] ?? details.countdown?.fr) ?? '',
         outro: (details.outro?.[lang] ?? details.outro?.fr) ?? '',
         subOutro: (details.subOutro?.[lang] ?? details.subOutro?.fr) ?? '',
