@@ -29,7 +29,7 @@ interface Seat {
 const tierColors: Record<SeatTier, string> = {
     'STANDARD': 'border-indigo-500 text-indigo-500',
     'PREMIUM': 'border-blue-500 text-blue-500',
-    'VIP': 'border-blue-500 text-blue-500',
+    'VIP': 'border-gray-500 text-gray-500',
     'PLATINIUM': 'border-green-500 text-green-500',
     'ULTRA VIP': 'border-yellow-500 text-yellow-500',
     'PRESTIGE': 'border-purple-500 text-purple-500',
@@ -207,6 +207,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
   const [bookingType, setBookingType] = useState<'table' | 'simple' | null>(null);
   const stepsRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const tableTitleRef = useRef<HTMLDivElement | null>(null);
   
   const [seats, setSeats] = useState<Seat[]>(generateSeats());
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -219,13 +220,15 @@ export function SeatSelection({ lang }: { lang: Locale }) {
 
   useEffect(() => {
     try {
-      if (contentRef.current) {
+      if (currentStep === 2 && bookingType === 'table' && tableTitleRef.current) {
+        tableTitleRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (contentRef.current) {
         contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch {}
-  }, [currentStep])
+  }, [currentStep, bookingType])
   useEffect(() => {
     // Reset per-seat bottles when seats change (preserve where possible)
     setSelectedBottlesBySeat(prev => {
@@ -462,7 +465,7 @@ export function SeatSelection({ lang }: { lang: Locale }) {
 
     return (
       <Card className="border-accent/20 bg-accent/5 animate-in slide-in-from-right-8 duration-500 overflow-hidden">
-        <CardHeader className="bg-accent/10 border-b border-accent/10">
+        <CardHeader ref={tableTitleRef} className="bg-accent/10 border-b border-accent/10 scroll-mt-24 md:scroll-mt-28">
            <CardTitle className="text-xl md:text-2xl text-accent">{pageContent.tableReservation}</CardTitle>
            <CardDescription className="text-accent/80">{pageContent.tableReservationDescription}</CardDescription>
            <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
@@ -595,24 +598,38 @@ export function SeatSelection({ lang }: { lang: Locale }) {
                       const disabled = onSiteSeat[seat.id] || (sum + bottle.price > seat.price)
                       return (
                         <CarouselItem key={bottle.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                          <button
-                            onClick={() => !disabled && handleSeatBottleChange(seat.id, bottle.id, 1, seat.price)}
-                            disabled={disabled}
-                            className={cn(
-                              'w-full p-3 border border-white/5 rounded-lg bg-background/40 text-left transition-all',
-                              disabled && 'opacity-50 cursor-not-allowed',
-                              count > 0 && 'ring-2 ring-accent/50'
-                            )}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium">{bottle.name} — {bottle.price}€</span>
-                              {count > 0 && (
-                                <span className="text-xs font-bold px-2 py-0.5 rounded bg-accent/20 text-accent">
-                                  {count}
-                                </span>
+                          <div className="relative">
+                            <button
+                              onClick={() => {
+                                if (disabled) return
+                                handleSeatBottleChange(seat.id, bottle.id, 1, seat.price)
+                              }}
+                              disabled={disabled}
+                              className={cn(
+                                'w-full p-3 border border-white/5 rounded-lg bg-background/40 text-left transition-all',
+                                disabled && 'opacity-50 cursor-not-allowed',
+                                count > 0 && 'ring-2 ring-accent/50'
                               )}
-                            </div>
-                          </button>
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">{bottle.name} — {bottle.price}€</span>
+                                {count > 0 && (
+                                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-accent/20 text-accent">
+                                    {count}
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                            {count > 0 && (
+                              <button
+                                onClick={() => handleSeatBottleChange(seat.id, bottle.id, -1, seat.price)}
+                                className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-accent text-accent-foreground text-xs font-bold"
+                                aria-label="Remove one"
+                              >
+                                −
+                              </button>
+                            )}
+                          </div>
                         </CarouselItem>
                       )
                     })}

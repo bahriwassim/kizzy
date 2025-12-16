@@ -29,15 +29,13 @@ export function CookieConsent({ lang = 'fr' }: { lang?: 'fr' | 'en' }) {
         title: 'Cookies and legal terms',
         desc: 'We use cookies to improve your experience. By accepting, you agree to our terms.',
         accept: 'Accept',
-        cgv: 'Terms of Sale',
-        cgu: 'Terms of Use',
+        legal: 'Terms of Sale & Use',
       }
     : {
         title: 'Cookies et mentions légales',
         desc: "Nous utilisons des cookies pour améliorer votre expérience. En acceptant, vous acceptez nos conditions.",
         accept: 'Accepter',
-        cgv: 'CGV',
-        cgu: 'CGU',
+        legal: 'CGV / CGU',
       }
 
   return (
@@ -47,7 +45,7 @@ export function CookieConsent({ lang = 'fr' }: { lang?: 'fr' | 'en' }) {
           <div>
             <p className="font-headline text-sm md:text-base">{text.title}</p>
             <p className="text-xs md:text-sm text-muted-foreground">
-              {text.desc} <Link href={`/${lang}/cgv`} className="underline">{text.cgv}</Link> • <Link href={`/${lang}/cgu`} className="underline">{text.cgu}</Link>
+              {text.desc} <Link href={`/${lang}/legal`} className="underline">{text.legal}</Link>
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -58,4 +56,3 @@ export function CookieConsent({ lang = 'fr' }: { lang?: 'fr' | 'en' }) {
     </div>
   )
 }
-

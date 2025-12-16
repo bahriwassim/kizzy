@@ -5,12 +5,12 @@ import { HomePopular } from '@/components/layout/home-popular';
 
 const content = {
   fr: {
-    title: "Sélectionnez Vos Sièges",
-    description: "Choisissez vos sièges préférés pour une nuit inoubliable. Les sections ont des prix différents."
+    title: "Sélectionnez votre tables",
+    description: " "
   },
   en: {
-    title: "Select Your Seats",
-    description: "Choose your favorite seats for an unforgettable night. Sections have different prices."
+    title: "Select Your Tables",
+    description: " "
   }
 }
 

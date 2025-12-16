@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
@@ -105,6 +105,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
   const [checkoutData, setCheckoutData] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
+  const orderSummaryTitleRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -117,6 +118,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
         }
     }
   }, []);
+  useEffect(() => {
+    try {
+      if (orderSummaryTitleRef.current) {
+        orderSummaryTitleRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch {}
+  }, [isMounted])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -248,7 +256,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
         
         <div className="space-y-8">
             <Card className="bg-card/50">
-                <CardHeader>
+                <CardHeader ref={orderSummaryTitleRef} className="scroll-mt-24 md:scroll-mt-28">
                     <CardTitle>{pageContent.orderSummaryTitle}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">

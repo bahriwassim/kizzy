@@ -71,16 +71,15 @@ export function SiteFooter({ lang }: { lang: Locale }) {
           <div className="space-y-4">
             <h4 className="text-sm font-semibold tracking-wider uppercase">{lang === 'en' ? 'Legal' : 'Légal'}</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <Link href={`/${lang}/cgu`} className="hover:text-foreground/80">{t.cgu}</Link>
-              <Link href={`/${lang}/cgv`} className="hover:text-foreground/80">{t.cgv}</Link>
+              <Link href={`/${lang}/legal`} className="hover:text-foreground/80">{lang === 'en' ? 'Terms of Sale & Use' : 'CGV / CGU'}</Link>
             </div>
             <div className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-green-400" />
               <span>{lang === 'en' ? 'Secure card payment' : 'Paiement sécurisé CB'}</span>
               <div className="flex items-center gap-2 ml-2">
-                <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
-                  <rect width="24" height="24" rx="4" fill="#1A1F71" />
-                  <path d="M5 15h2.2l1.1-6H6.1L5 15zM9.3 15h2l1.2-6h-2l-1.2 6zM14.5 15h1.9l2.6-6h-1.9l-2.6 6z" fill="#fff"/>
+                <svg viewBox="0 0 80 24" className="h-6 w-10" aria-hidden="true">
+                  <rect width="80" height="24" rx="4" fill="#FFFFFF" />
+                  <text x="10" y="17" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1A1F71">VISA</text>
                 </svg>
                 <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
                   <rect width="24" height="24" rx="4" fill="#261B1B" />
