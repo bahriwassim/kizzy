@@ -19,6 +19,9 @@ export function CookieConsent({ lang = 'fr' }: { lang?: 'fr' | 'en' }) {
     try {
       localStorage.setItem('cookieConsent', 'true')
     } catch {}
+    try {
+      window.dispatchEvent(new Event('cookieConsentAccepted'))
+    } catch {}
     setVisible(false)
   }
 

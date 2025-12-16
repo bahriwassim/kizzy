@@ -7,6 +7,7 @@ import { i18n } from '@/i18n-config';
 import { Playfair_Display, Montserrat } from 'next/font/google';
 import { CookieConsent } from '@/components/ui/cookie-consent';
 import { SiteFooter } from '@/components/layout/site-footer';
+import { MetaPixel } from '@/components/analytics/meta-pixel';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -66,6 +67,7 @@ export default function RootLayout({
           <SiteFooter lang={(params.lang as 'fr' | 'en') ?? 'fr'} />
         </div>
         <CookieConsent lang={(params.lang as 'fr' | 'en') ?? 'fr'} />
+        <MetaPixel />
         <Toaster />
       </body>
     </html>

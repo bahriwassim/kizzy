@@ -13,9 +13,10 @@ export async function GET(request: Request) {
     const details = cfg?.details ?? {}
     const arrival = details?.arrival ?? {}
     const party = details?.party ?? {}
-    const marquee = cfg?.marquee ?? {}
+  const marquee = cfg?.marquee ?? {}
+  const analytics = cfg?.analytics ?? {}
 
-    const response = {
+  const response = {
       hero: {
         title: (hero.title?.[lang] ?? hero.title?.[lang === 'fr' ? 'en' : 'fr']) ?? '',
         subtitle: (hero.subtitle?.[lang] ?? hero.subtitle?.[lang === 'fr' ? 'en' : 'fr']) ?? '',
@@ -48,6 +49,10 @@ export async function GET(request: Request) {
         text: marquee?.text?.[lang] ?? marquee?.text?.fr ?? '',
         speedSeconds: marquee?.speedSeconds ?? 45,
         enabled: marquee?.enabled ?? true
+      },
+      analytics: {
+        facebookPixelId: analytics?.facebookPixelId ?? '',
+        facebookPixelEnabled: !!analytics?.facebookPixelEnabled
       }
     }
     return NextResponse.json(response, { status: 200 })

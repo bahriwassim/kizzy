@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { type Locale } from '@/i18n-config'
@@ -77,20 +78,7 @@ export function SiteFooter({ lang }: { lang: Locale }) {
               <ShieldCheck className="h-4 w-4 text-green-400" />
               <span>{lang === 'en' ? 'Secure card payment' : 'Paiement sécurisé CB'}</span>
               <div className="flex items-center gap-2 ml-2">
-                <svg viewBox="0 0 80 24" className="h-6 w-10" aria-hidden="true">
-                  <rect width="80" height="24" rx="4" fill="#FFFFFF" />
-                  <text x="10" y="17" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1A1F71">VISA</text>
-                </svg>
-                <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
-                  <rect width="24" height="24" rx="4" fill="#261B1B" />
-                  <circle cx="10" cy="12" r="5" fill="#EB001B" />
-                  <circle cx="14" cy="12" r="5" fill="#F79E1B" opacity="0.85" />
-                </svg>
-                <svg viewBox="0 0 24 24" className="h-4 w-7" aria-hidden="true">
-                  <rect width="24" height="24" rx="4" fill="#003087" />
-                  <path d="M7 7h8c2 0 3 1.2 2.6 3l-1 5c-.3 1.2-1.4 2-2.6 2H9.5l-.7 2H6.5l1.2-10c.1-1 .9-2 2.3-2z" fill="#fff"/>
-                  <path d="M9 9h7c1.5 0 2.3.8 2 2l-.8 4c-.2.8-.9 1.3-1.8 1.3h-5.6l-.8 2H7.2l1.1-8c.1-.7.7-1.3 1.7-1.3z" fill="#009CDE" opacity="0.9"/>
-                </svg>
+                <Image src="/visa.jpg" alt="Visa" width={90} height={26} className="rounded" />
               </div>
             </div>
           </div>

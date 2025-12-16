@@ -28,6 +28,8 @@ const schema = z.object({
   marqueeTextEn: z.string().min(1),
   marqueeSpeedSeconds: z.coerce.number().int().min(5).max(120),
   marqueeEnabled: z.boolean().default(true),
+  facebookPixelId: z.string().regex(/^\d{8,20}$/, { message: 'ID Pixel invalide' }).or(z.literal('')),
+  facebookPixelEnabled: z.boolean().default(false),
   detailsTitleFr: z.string().min(1),
   detailsTitleEn: z.string().min(1),
   introFr: z.string().min(1),
@@ -73,6 +75,8 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
       marqueeTextEn: '',
       marqueeSpeedSeconds: 45,
       marqueeEnabled: true,
+      facebookPixelId: '',
+      facebookPixelEnabled: false,
       detailsTitleFr: '', detailsTitleEn: '',
       introFr: '', introEn: '',
       arrivalTitleFr: '', arrivalTitleEn: '',
@@ -89,49 +93,53 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
   })
 
   useEffect(() => {
-    fetch(`/api/soiree?lang=${langState}`, { cache: 'no-store' })
-      .then(res => res.json())
-      .then(cfg => {
-        form.reset({
-          heroTitleFr: cfg.hero.title,
-          heroTitleEn: cfg.hero.title,
-          heroSubtitleFr: cfg.hero.subtitle,
-          heroSubtitleEn: cfg.hero.subtitle,
-          heroVideoId: cfg.hero.videoId,
-          flyerImageUrl: cfg.media.flyerImageUrl,
-          carouselVideoIds: cfg.media.carouselVideoIds.join(','),
-          phone: cfg.contact?.phone || '',
-          instagram: cfg.contact?.instagram || '',
-          marqueeTextFr: cfg.marquee?.text || '',
-          marqueeTextEn: cfg.marquee?.text || '',
-          marqueeSpeedSeconds: cfg.marquee?.speedSeconds ?? 45,
-          marqueeEnabled: cfg.marquee?.enabled ?? true,
-          detailsTitleFr: cfg.details.title,
-          detailsTitleEn: cfg.details.title,
-          introFr: cfg.details.intro,
-          introEn: cfg.details.intro,
-          arrivalTitleFr: cfg.details.arrival.title,
-          arrivalTitleEn: cfg.details.arrival.title,
-          arrivalDescFr: cfg.details.arrival.desc,
-          arrivalDescEn: cfg.details.arrival.desc,
-          perksFr: cfg.details.arrival.perks,
-          perksEn: cfg.details.arrival.perks,
-          partyTitleFr: cfg.details.party.title,
-          partyTitleEn: cfg.details.party.title,
-          partyDescFr: cfg.details.party.desc,
-          partyDescEn: cfg.details.party.desc,
-          countdownTitleFr: cfg.details.countdownTitle || '',
-          countdownTitleEn: cfg.details.countdownTitle || '',
-          countdownFr: cfg.details.countdown,
-          countdownEn: cfg.details.countdown,
-          outroFr: cfg.details.outro,
-          outroEn: cfg.details.outro,
-          subOutroFr: cfg.details.subOutro,
-          subOutroEn: cfg.details.subOutro,
-          buttonTextFr: cfg.details.buttonText,
-          buttonTextEn: cfg.details.buttonText
-        })
+    Promise.all([
+      fetch(`/api/soiree?lang=fr`, { cache: 'no-store' }).then(r => r.json()),
+      fetch(`/api/soiree?lang=en`, { cache: 'no-store' }).then(r => r.json()),
+    ]).then(([cfgFr, cfgEn]) => {
+      const cfgBase = cfgFr || {}
+      form.reset({
+        heroTitleFr: cfgFr.hero.title,
+        heroTitleEn: cfgEn.hero.title,
+        heroSubtitleFr: cfgFr.hero.subtitle,
+        heroSubtitleEn: cfgEn.hero.subtitle,
+        heroVideoId: cfgBase.hero.videoId,
+        flyerImageUrl: cfgBase.media.flyerImageUrl,
+        carouselVideoIds: (cfgBase.media.carouselVideoIds || []).join(','),
+        phone: cfgBase.contact?.phone || '',
+        instagram: cfgBase.contact?.instagram || '',
+        marqueeTextFr: cfgFr.marquee?.text || '',
+        marqueeTextEn: cfgEn.marquee?.text || '',
+        marqueeSpeedSeconds: cfgBase.marquee?.speedSeconds ?? 45,
+        marqueeEnabled: cfgBase.marquee?.enabled ?? true,
+        facebookPixelId: cfgBase.analytics?.facebookPixelId || '',
+        facebookPixelEnabled: !!cfgBase.analytics?.facebookPixelEnabled,
+        detailsTitleFr: cfgFr.details.title,
+        detailsTitleEn: cfgEn.details.title,
+        introFr: cfgFr.details.intro,
+        introEn: cfgEn.details.intro,
+        arrivalTitleFr: cfgFr.details.arrival.title,
+        arrivalTitleEn: cfgEn.details.arrival.title,
+        arrivalDescFr: cfgFr.details.arrival.desc,
+        arrivalDescEn: cfgEn.details.arrival.desc,
+        perksFr: cfgFr.details.arrival.perks,
+        perksEn: cfgEn.details.arrival.perks,
+        partyTitleFr: cfgFr.details.party.title,
+        partyTitleEn: cfgEn.details.party.title,
+        partyDescFr: cfgFr.details.party.desc,
+        partyDescEn: cfgEn.details.party.desc,
+        countdownTitleFr: cfgFr.details.countdownTitle || '',
+        countdownTitleEn: cfgEn.details.countdownTitle || '',
+        countdownFr: cfgFr.details.countdown,
+        countdownEn: cfgEn.details.countdown,
+        outroFr: cfgFr.details.outro,
+        outroEn: cfgEn.details.outro,
+        subOutroFr: cfgFr.details.subOutro,
+        subOutroEn: cfgEn.details.subOutro,
+        buttonTextFr: cfgFr.details.buttonText,
+        buttonTextEn: cfgEn.details.buttonText
       })
+    }).catch(() => {})
   }, [langState])
 
   const onSubmit = (values: z.infer<typeof schema>) => {
@@ -164,6 +172,10 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
         text: { fr: values.marqueeTextFr, en: values.marqueeTextEn },
         speedSeconds: values.marqueeSpeedSeconds,
         enabled: values.marqueeEnabled
+      },
+      analytics: {
+        facebookPixelId: values.facebookPixelId || '',
+        facebookPixelEnabled: values.facebookPixelEnabled
       },
       details: {
         title: { fr: values.detailsTitleFr, en: values.detailsTitleEn },
@@ -354,6 +366,67 @@ export default function AdminSoireePage({ params }: { params: Promise<{ lang: Lo
                 <FormMessage />
               </FormItem>
             )} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Analytics</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FormField control={form.control} name="facebookPixelId" render={({ field }) => (
+            <FormItem>
+              <FormLabel>ID Pixel Facebook</FormLabel>
+              <FormControl><Input placeholder="123456789012345" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="facebookPixelEnabled" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Activer le Pixel</FormLabel>
+              <FormControl><Input type="checkbox" checked={field.value} onChange={(e) => field.onChange(e.target.checked)} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <div className="flex gap-2">
+            <Button type="button" onClick={() => {
+              const id = form.getValues('facebookPixelId')
+              const enabled = form.getValues('facebookPixelEnabled')
+              if (!enabled || !id) {
+                toast({ variant: 'destructive', title: 'Pixel inactif', description: 'Activez le Pixel et indiquez un ID.' })
+                return
+              }
+              try {
+                const w = window as any
+                const ensureLoadedAndTrack = () => {
+                  try {
+                    w.fbq('init', id)
+                    w.fbq('track', 'PageView')
+                    toast({ title: 'Pixel testé', description: 'Événement PageView envoyé.' })
+                  } catch {
+                    toast({ variant: 'destructive', title: 'Échec du test', description: 'Le script Pixel n’est pas disponible.' })
+                  }
+                }
+                if (typeof w.fbq === 'function') {
+                  ensureLoadedAndTrack()
+                } else {
+                  const existing = document.getElementById('fb-pixel-test')
+                  if (!existing) {
+                    const s = document.createElement('script')
+                    s.id = 'fb-pixel-test'
+                    s.async = true
+                    s.src = 'https://connect.facebook.net/en_US/fbevents.js'
+                    s.onload = ensureLoadedAndTrack
+                    document.head.appendChild(s)
+                  } else {
+                    existing.addEventListener('load', ensureLoadedAndTrack, { once: true })
+                  }
+                }
+              } catch {
+                toast({ variant: 'destructive', title: 'Échec du test', description: 'Impossible d’initialiser le Pixel.' })
+              }
+            }}>Tester le Pixel</Button>
           </div>
         </CardContent>
       </Card>
