@@ -35,9 +35,10 @@ export async function POST(request: Request) {
       }
     }
 
-    const origin = new URL(request.url).origin
-    const successUrl = `${origin}/${lang}/confirmation?session_id={CHECKOUT_SESSION_ID}`
-    const cancelUrl = `${origin}/${lang}/checkout`
+    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
+    const site = envSite.replace(/\/+$/, '')
+    const successUrl = `${site}/${lang}/confirmation?session_id={CHECKOUT_SESSION_ID}`
+    const cancelUrl = `${site}/${lang}/checkout`
 
     const line_items: Array<Stripe.Checkout.SessionCreateParams.LineItem> = []
 

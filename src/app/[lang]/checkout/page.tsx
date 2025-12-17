@@ -6,6 +6,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -21,6 +22,7 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   phone: z.string().min(10, { message: 'Please enter a valid phone number.' }),
   promoCode: z.string().optional(),
+  acceptLegal: z.boolean().refine(v => v, { message: 'Vous devez accepter les CGV/CGU.' }),
 });
 
 const BOTTLE_OPTIONS = [
@@ -133,6 +135,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
       email: '',
       phone: '',
       promoCode: '',
+      acceptLegal: false,
     },
   });
 
@@ -239,6 +242,23 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
                   )}/>
                 </fieldset>
                 
+                <FormField control={form.control} name="acceptLegal" render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={field.value} onCheckedChange={(v) => field.onChange(!!v)} />
+                        <label className="text-sm">
+                          {lang === 'fr' ? 'J’accepte les ' : 'I accept the '}
+                          <a className="underline" href={`/${lang}/legal`} target="_blank" rel="noopener noreferrer">
+                            {lang === 'fr' ? 'CGV / CGU' : 'Terms of Sale & Use'}
+                          </a>
+                        </label>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}/>
+
                 <Separator />
                 <fieldset className="space-y-4">
                   <legend className="font-headline text-lg mb-2">{pageContent.paymentMethodLegend}</legend>
@@ -248,7 +268,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
                       : 'You will be redirected to Stripe to pay (Apple Pay, Google Pay or card).'}
                   </div>
                 </fieldset>
-                <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">{pageContent.submitButton}</Button>
+                <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={!form.watch('acceptLegal')}>{pageContent.submitButton}</Button>
               </form>
             </Form>
           </CardContent>
