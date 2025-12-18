@@ -8,58 +8,58 @@ import type Stripe from 'stripe'
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
-  const sig = request.headers.get('stripe-signature') || ''
-  let event: Stripe.Event
   try {
-    const raw = await request.text()
+    const body = await request.json().catch(() => ({} as any))
+    const session_id = String(body?.session_id || '')
+    if (!session_id) return NextResponse.json({ error: 'Missing session_id' }, { status: 400 })
+
     const stripe = await getStripe()
-    let secret = process.env.STRIPE_WEBHOOK_SECRET || ''
-    if (!secret) {
-      const supabase = getSupabaseAdmin()
-      const { data } = await supabase.from('payment_config').select('webhook_secret').eq('id', 'default').single()
-      secret = data?.webhook_secret || ''
+    const session = await stripe.checkout.sessions.retrieve(session_id)
+    if (!session || (session.payment_status !== 'paid' && session.status !== 'complete')) {
+      return NextResponse.json({ error: 'Session not paid' }, { status: 409 })
     }
-    if (!secret) {
-      throw new Error('Missing Stripe webhook secret')
-    }
-    event = stripe.webhooks.constructEvent(raw, sig, secret)
-  } catch (err: any) {
-    return NextResponse.json({ error: `Webhook signature verification failed: ${err.message}` }, { status: 400 })
-  }
 
-  try {
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session
-      const supabase = getSupabaseAdmin()
+    const supabase = getSupabaseAdmin()
 
-      const { data: order } = await supabase
+    let existingOrder: any = null
+    try {
+      const { data } = await supabase.from('orders').select('id').eq('id', session.id).single()
+      existingOrder = data
+    } catch {}
+    let created = false
+    if (!existingOrder) {
+      await supabase
         .from('orders')
         .insert({
           id: session.id,
           email: session.customer_details?.email ?? session.customer_email,
-          name: session.metadata?.customer_name ?? session.customer_details?.name ?? null,
-          phone: session.metadata?.customer_phone ?? session.customer_details?.phone ?? null,
+          name: (session.metadata as any)?.customer_name ?? session.customer_details?.name ?? null,
+          phone: (session.metadata as any)?.customer_phone ?? session.customer_details?.phone ?? null,
           amount_total: session.amount_total,
           currency: session.currency,
           status: 'paid',
           created_at: new Date().toISOString(),
         })
-        .select()
-        .single()
+      created = true
+    }
 
-      const stripe = await getStripe()
-      const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 })
-      const ticketImages: string[] = []
-      const tierCounts: Record<string, number> = {}
+    const { data: existingTickets, error: ticketsErr } = await supabase
+      .from('tickets')
+      .select('id')
+      .eq('order_id', session.id)
+    const hasTickets = Array.isArray(existingTickets) && existingTickets.length > 0
 
+    const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 })
+    const ticketImages: string[] = []
+    const tierCounts: Record<string, number> = {}
+
+    if (!hasTickets) {
       for (const item of items.data) {
         const quantity = item.quantity || 1
         for (let i = 0; i < quantity; i++) {
-          const ticketId = `${session.id}-${item.description}-${i + 1}`
           const payload = JSON.stringify({ orderId: session.id, product: item.description, idx: i + 1 })
           const dataUrl = await QRCode.toDataURL(payload, { width: 256, margin: 1 })
           ticketImages.push(dataUrl)
-
           await supabase.from('tickets').insert({
             order_id: session.id,
             product_name: item.description,
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
         await supabase.rpc('increment_inventory', { p_tier: tier, p_qty: qty })
       }
 
-      const promoCode = (session.metadata?.promo_code || '').toString().trim()
+      const promoCode = ((session.metadata as any)?.promo_code || '').toString().trim()
       if (promoCode) {
         try {
           const { data: promo } = await supabase
@@ -105,38 +105,28 @@ export async function POST(request: Request) {
       const user = process.env.SMTP_USER
       const pass = process.env.SMTP_PASS
       const from = process.env.EMAIL_FROM || 'noreply@garden-party.kizzyevent.com'
-      const to = order?.email || session.customer_email || ''
+      const to = (session.customer_details?.email ?? session.customer_email) || ''
 
-      if (host && user && pass && to) {
-        const transporter = nodemailer.createTransport({
-          host,
-          port,
-          secure: port === 465,
-          auth: { user, pass },
-        })
-
-        const imagesHtml = ticketImages
-          .map((src, idx) => `<div style="margin:12px 0;"><div style="font-weight:bold">Ticket ${idx + 1}</div><img src="${src}" width="180" height="180" alt="QR Ticket ${idx + 1}" /></div>`)
-          .join('')
-
-        const html = `
-          <div style="font-family:system-ui,Segoe UI,Roboto,Arial">
-            <h2>Vos billets</h2>
-            <p>Merci pour votre achat. Présentez ces QR codes à l'entrée.</p>
-            ${imagesHtml}
-          </div>
-        `
-        await transporter.sendMail({
-          from,
-          to,
-          subject: 'Confirmation de vos billets',
-          html,
-        })
+      if (host && user && pass && to && ticketImages.length > 0) {
+        try {
+          const transporter = nodemailer.createTransport({ host, port, secure: port === 465, auth: { user, pass } })
+          const imagesHtml = ticketImages
+            .map((src, idx) => `<div style="margin:12px 0;"><div style="font-weight:bold">Ticket ${idx + 1}</div><img src="${src}" width="180" height="180" alt="QR Ticket ${idx + 1}" /></div>`) 
+            .join('')
+          const html = `
+            <div style="font-family:system-ui,Segoe UI,Roboto,Arial">
+              <h2>Vos billets</h2>
+              <p>Merci pour votre achat. Présentez ces QR codes à l'entrée.</p>
+              ${imagesHtml}
+            </div>
+          `
+          await transporter.sendMail({ from, to, subject: 'Confirmation de vos billets', html })
+        } catch {}
       }
     }
 
-    return NextResponse.json({ received: true })
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message ?? 'Unhandled webhook error' }, { status: 500 })
+    return NextResponse.json({ ok: true, created, tickets_created: !hasTickets })
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message ?? 'Reconcile failed' }, { status: 500 })
   }
 }

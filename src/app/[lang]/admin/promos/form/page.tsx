@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { Suspense } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -24,6 +25,7 @@ import { CalendarIcon } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
+import { getSupabaseBrowser } from '@/lib/supabase'
 
 const formSchema = z.object({
   code: z.string().min(3, { message: "Le code doit comporter au moins 3 caractères." }).regex(/^[A-Z0-9]+$/, "Le code ne peut contenir que des lettres majuscules et des chiffres."),
@@ -51,11 +53,51 @@ function PromoFormContent() {
     defaultValues,
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  React.useEffect(() => {
+    if (!isEditMode || !promoId) return
+    ;(async () => {
+      try {
+        const { data } = await getSupabaseBrowser()
+          .from('promos')
+          .select('code,type,value,status,startDate,endDate')
+          .eq('id', promoId)
+          .single()
+        if (data) {
+          form.reset({
+            code: String(data.code || ''),
+            type: (data.type as 'Pourcentage' | 'Montant Fixe') ?? 'Pourcentage',
+            value: Number(data.value ?? 0),
+            status: (data.status as 'Brouillon' | 'Actif' | 'Programmé' | 'Expiré') ?? 'Brouillon',
+            startDate: data.startDate ? new Date(data.startDate as any) : undefined,
+            endDate: data.endDate ? new Date(data.endDate as any) : undefined,
+          })
+        }
+      } catch {}
+    })()
+  }, [isEditMode, promoId])
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const payload = {
+      code: values.code.trim().toUpperCase(),
+      type: values.type,
+      value: Number(values.value),
+      status: values.status,
+      startDate: values.startDate ? values.startDate.toISOString() : null,
+      endDate: values.endDate ? values.endDate.toISOString() : null,
+    }
+    const res = await fetch('/api/admin/promos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(isEditMode && promoId ? { id: promoId, ...payload } : payload),
+    })
+    if (!res.ok) {
+      const { error } = await res.json().catch(() => ({ error: 'Erreur inconnue' }))
+      toast({ title: 'Erreur', description: error || 'Impossible d’enregistrer le code promo' })
+      return
+    }
     toast({
       title: `Code promo ${isEditMode ? 'mis à jour' : 'créé'}`,
-      description: `Le code promo "${values.code}" a été enregistré avec succès.`,
+      description: `Le code promo "${payload.code}" a été enregistré avec succès.`,
     })
     router.push('/admin/promos')
   }

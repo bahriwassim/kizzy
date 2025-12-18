@@ -144,6 +144,12 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      try {
+        const w = window as any
+        if (typeof w.fbq === 'function') {
+          w.fbq('track', 'InitiateCheckout', { currency: 'EUR' })
+        }
+      } catch {}
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -155,6 +161,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
             simpleEntries,
             totalPrice,
           },
+          promoCode: values.promoCode,
         }),
       })
       if (!res.ok) {
