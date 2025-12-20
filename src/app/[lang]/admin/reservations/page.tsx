@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabase";
 
 type OrderRow = {
@@ -57,9 +58,20 @@ const getStatusVariant = (status: string | null) => {
 export default function ReservationsPage() {
   const [orders, setOrders] = React.useState<OrderRow[]>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
+  const params = useParams() as { lang?: string }
+  const lang = String(params?.lang || 'fr')
 
   React.useEffect(() => {
     (async () => {
+      try {
+        const res = await fetch('/api/admin/orders?limit=200')
+        if (res.ok) {
+          const json = await res.json()
+          const arr = Array.isArray(json?.orders) ? json.orders : []
+          setOrders(arr as any)
+          return
+        }
+      } catch {}
       try {
         const { data } = await getSupabaseBrowser()
           .from('orders')
@@ -130,7 +142,7 @@ export default function ReservationsPage() {
                   <TableCell className="text-right">{formatAmount(order.amount_total, order.currency)}</TableCell>
                   <TableCell className="text-center">
                     <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/admin/reservations/${order.id}`}>
+                      <Link href={`/${lang}/admin/reservations/${order.id}`}>
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">Voir les détails</span>
                       </Link>

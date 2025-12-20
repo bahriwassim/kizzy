@@ -3,12 +3,13 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle2, QrCode } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { type Locale } from '@/i18n-config';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { getSupabaseBrowser } from '@/lib/supabase';
+import QRCode from 'qrcode';
 
 const content = {
   fr: {
@@ -72,6 +73,7 @@ function ConfirmationPageContent() {
   const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [reconciling, setReconciling] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string>('');
 
   const totalPaid = useMemo(() => {
     const cents = order?.amount_total || 0;
@@ -103,6 +105,22 @@ function ConfirmationPageContent() {
       }
     }
     load();
+    async function genQR() {
+      try {
+        if (!sessionId) {
+          setQrUrl('');
+          return;
+        }
+        const envSite = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+        const site = String(envSite).replace(/\/+$/, '');
+        const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(sessionId)}`;
+        const dataUrl = await QRCode.toDataURL(confirmUrl, { width: 256, margin: 1 });
+        setQrUrl(dataUrl);
+      } catch {
+        setQrUrl('');
+      }
+    }
+    genQR();
     return () => {
       cancelled = true;
     };
@@ -186,7 +204,12 @@ function ConfirmationPageContent() {
                   <p><strong>{pageContent.totalPaid}:</strong> {totalPaid} €</p>
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <QrCode className="w-20 h-20" />
+                  {qrUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={qrUrl} alt="QR" className="w-20 h-20 object-contain bg-white border rounded" />
+                  ) : (
+                    <div className="w-20 h-20 bg-white border rounded" />
+                  )}
                   <span className="text-xs text-muted-foreground">{pageContent.scanAtEntry}</span>
                 </div>
               </div>

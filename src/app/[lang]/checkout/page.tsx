@@ -106,6 +106,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
   
   const [checkoutData, setCheckoutData] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [promoCodeInput, setPromoCodeInput] = useState('')
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
   const orderSummaryTitleRef = useRef<HTMLDivElement | null>(null);
 
@@ -159,6 +160,8 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
           order: {
             selectedSeats,
             simpleEntries,
+            selectedBottlesBySeat,
+            onSiteSeat,
             totalPrice,
           },
           promoCode: values.promoCode,
@@ -366,9 +369,25 @@ export default function CheckoutPage({ params }: { params: Promise<{ lang: Local
                 </CardHeader>
                 <CardContent>
                     <div className="flex gap-2">
-                        <Input placeholder={pageContent.promoCodePlaceholder} />
-                        <Button variant="secondary">{pageContent.promoCodeButton}</Button>
+                        <Input placeholder={pageContent.promoCodePlaceholder} value={promoCodeInput} onChange={(e) => setPromoCodeInput(e.target.value)} />
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            form.setValue('promoCode', promoCodeInput.trim())
+                            toast({
+                              title: lang === 'en' ? 'Promo code applied' : 'Code promo appliqué',
+                              description: lang === 'en' ? 'Discount will be applied at payment.' : 'La réduction sera appliquée au paiement.',
+                            })
+                          }}
+                        >
+                          {pageContent.promoCodeButton}
+                        </Button>
                     </div>
+                    {form.watch('promoCode')?.trim() ? (
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        {lang === 'fr' ? 'Code appliqué' : 'Applied code'}: <span className="font-medium">{form.watch('promoCode')?.trim()}</span>
+                      </div>
+                    ) : null}
                 </CardContent>
             </Card>
         </div>

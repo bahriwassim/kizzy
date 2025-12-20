@@ -13,28 +13,21 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import {
-  Armchair,
   ClipboardList,
-  CreditCard,
   LayoutDashboard,
   Mails,
   PartyPopper,
   Percent,
-  Ticket,
 } from 'lucide-react';
 import { Locale } from '@/i18n-config';
 import { RequireAuth } from '@/components/auth/require-auth';
 
 const menuItems = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
-  { href: '/admin/events', icon: Ticket, label: 'Événements' },
   { href: '/admin/soiree', icon: PartyPopper, label: 'Soirée' },
   { href: '/admin/reservations', icon: ClipboardList, label: 'Réservations' },
-  { href: '/admin/seats', icon: Armchair, label: 'Sièges & Salles' },
   { href: '/admin/promos', icon: Percent, label: 'Codes Promo' },
   { href: '/admin/emails', icon: Mails, label: 'E-mails' },
-  { href: '/admin/payments', icon: CreditCard, label: 'Paiements' },
-  { href: '/admin/payments/workbench', icon: CreditCard, label: 'Stripe Workbench' },
 ];
 
 export default async function AdminLayout({

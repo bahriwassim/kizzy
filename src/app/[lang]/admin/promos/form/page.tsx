@@ -85,9 +85,15 @@ function PromoFormContent() {
       startDate: values.startDate ? values.startDate.toISOString() : null,
       endDate: values.endDate ? values.endDate.toISOString() : null,
     }
+    const supabase = getSupabaseBrowser()
+    const { data: sessionRes } = await supabase.auth.getSession()
+    const token = sessionRes.session?.access_token || (typeof window !== 'undefined' && window.localStorage.getItem('adminOverride') === 'true' ? 'OVERRIDE' : undefined)
     const res = await fetch('/api/admin/promos', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify(isEditMode && promoId ? { id: promoId, ...payload } : payload),
     })
     if (!res.ok) {

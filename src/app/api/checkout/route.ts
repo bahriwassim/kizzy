@@ -141,22 +141,51 @@ export async function POST(request: Request) {
     }
 
     const stripe = await getStripe()
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      customer_email: customer.email,
-      metadata: {
-        customer_name: customer.name,
-        customer_phone: customer.phone || '',
-        lang,
-        inventory_check: JSON.stringify(requestedByTier),
-        promo_code: appliedPromoCode || '',
-        discount_cents: String(discountCents || 0),
-      },
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      line_items,
-    })
+    const seatsForMeta = (order?.selectedSeats || []).map(s => ({
+      id: (s as any)?.id,
+      label: (s as any)?.label,
+      tier: (s as any)?.tier,
+    }))
+    const bottlesList: string[] = []
+    try {
+      for (const seat of (order?.selectedSeats || []) as any[]) {
+        const seatId = seat?.id
+        const seatLabel = seat?.label
+        const seatTier = seat?.tier
+        const onSiteMap = (order as any)?.onSiteSeat || {}
+        const bottlesMap = (order as any)?.selectedBottlesBySeat || {}
+        if (onSiteMap && onSiteMap[seatId]) {
+          bottlesList.push(`${seatLabel}|${seatTier}|on_site`)
+        } else {
+          const seatBottles = bottlesMap?.[seatId] || {}
+          for (const [bid, cnt] of Object.entries(seatBottles)) {
+            const count = Number(cnt || 0)
+            if (count > 0) {
+              bottlesList.push(`${seatLabel}|${seatTier}|${bid}|${count}`)
+            }
+          }
+        }
+      }
+    } catch {}
+    const bottlesMeta = bottlesList.join(';').slice(0, 480)
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        payment_method_types: ['card'],
+        customer_email: customer.email,
+        metadata: {
+          customer_name: customer.name,
+          customer_phone: customer.phone || '',
+          lang,
+          inventory_check: JSON.stringify(requestedByTier),
+          promo_code: appliedPromoCode || '',
+          discount_cents: String(discountCents || 0),
+          seats_meta: JSON.stringify(seatsForMeta),
+          bottles_meta: bottlesMeta,
+        },
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        line_items,
+      })
 
     return NextResponse.json({ id: session.id, url: session.url })
   } catch (err: any) {

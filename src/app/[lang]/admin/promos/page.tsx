@@ -6,19 +6,37 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import React from "react";
+import { useParams } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabase";
 
-type PromoRow = { id: string; code: string; type: string; value: string; status: string; redemptions?: number }
+type PromoRow = { id: string; code: string; type: string; value: number; status: string; redemptions?: number }
 
 export default function PromosPage() {
     const [promos, setPromos] = React.useState<PromoRow[]>([])
+    const params = useParams() as { lang?: string }
+    const lang = params?.lang || 'fr'
     React.useEffect(() => {
         (async () => {
             try {
-                const { data } = await getSupabaseBrowser().from('promos').select('id,code,type,value,status,redemptions')
-                setPromos(Array.isArray(data) ? data : [])
+                const res = await fetch('/api/admin/promos', { cache: 'no-store' })
+                const data = await res.json().catch(() => [])
+                if (res.ok && Array.isArray(data) && data.length > 0) {
+                    setPromos(data)
+                    return
+                }
+                const { data: clientData } = await getSupabaseBrowser()
+                  .from('promos')
+                  .select('id,code,type,value,status,redemptions')
+                setPromos(Array.isArray(clientData) ? clientData as any : [])
             } catch {
-                setPromos([])
+                try {
+                    const { data: clientData } = await getSupabaseBrowser()
+                      .from('promos')
+                      .select('id,code,type,value,status,redemptions')
+                    setPromos(Array.isArray(clientData) ? clientData as any : [])
+                } catch {
+                    setPromos([])
+                }
             }
         })()
     }, [])
@@ -30,7 +48,7 @@ export default function PromosPage() {
                     <p className="text-muted-foreground">Créez et gérez des codes de réduction pour vos événements.</p>
                 </div>
                 <Button asChild>
-                    <Link href="/admin/promos/form">Créer un code promo</Link>
+                    <Link href={`/${lang}/admin/promos/form`}>Créer un code promo</Link>
                 </Button>
             </div>
             <Card>
@@ -66,7 +84,7 @@ export default function PromosPage() {
                                     <TableCell>{promo.redemptions ?? 0}</TableCell>
                                     <TableCell>
                                         <Button variant="ghost" size="sm" asChild>
-                                            <Link href={`/admin/promos/form?id=${promo.id}`}>Modifier</Link>
+                                            <Link href={`/${lang}/admin/promos/form?id=${promo.id}`}>Modifier</Link>
                                         </Button>
                                     </TableCell>
                                 </TableRow>

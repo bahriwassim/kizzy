@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import React from "react"
 import { getSupabaseBrowser } from "@/lib/supabase"
+import { Input } from "@/components/ui/input"
 
 type DailyRevenue = { name: string; revenue: number }
 type InventoryRow = { tier: string; capacity: number | null; sold_count: number | null }
@@ -39,80 +40,17 @@ export default function DashboardPage() {
   React.useEffect(() => {
     (async () => {
       try {
-        const supabase = getSupabaseBrowser()
-        const since7d = new Date()
-        since7d.setDate(since7d.getDate() - 6)
-        since7d.setHours(0, 0, 0, 0)
-        const since14d = new Date()
-        since14d.setDate(since14d.getDate() - 13)
-        since14d.setHours(0, 0, 0, 0)
-
-        const { data: orders7d } = await supabase
-          .from('orders')
-          .select('amount_total,created_at')
-          .gte('created_at', since7d.toISOString())
-
-        const { data: ordersPrev7d } = await supabase
-          .from('orders')
-          .select('amount_total,created_at')
-          .gte('created_at', since14d.toISOString())
-          .lte('created_at', new Date(since7d.getTime() - 1).toISOString())
-
-        const { data: tickets, count: ticketsCount } = await supabase
-          .from('tickets')
-          .select('id', { count: 'exact' })
-        setTicketsSold(ticketsCount || (tickets?.length || 0))
-
-        const { data: inventoryRows } = await supabase
-          .from('inventory')
-          .select('tier, capacity, sold_count')
-
-        const totalSold = (inventoryRows || []).reduce((a, r) => a + (r.sold_count || 0), 0)
-        const top = (inventoryRows || []).reduce<InventoryRow | null>((best, row) => {
-          if (!best) return row
-          return (row.sold_count || 0) > (best.sold_count || 0) ? row : best
-        }, null)
-        if (top) {
-          setPopularSection(String(top.tier))
-          const share = totalSold > 0 ? Math.round(((top.sold_count || 0) / totalSold) * 100) : 0
-          setPopularShare(share)
-        } else {
-          setPopularSection('-')
-          setPopularShare(0)
-        }
-
-        const { data: promosRows } = await supabase
-          .from('promos')
-          .select('redemptions')
-        const promoCount = (promosRows || []).reduce((a, r) => a + (r.redemptions || 0), 0)
-        setPromosUsed(promoCount)
-
-        const dailyMap = new Map<string, number>()
-        for (let i = 0; i < 7; i++) {
-          const d = new Date()
-          d.setDate(d.getDate() - (6 - i))
-          d.setHours(0, 0, 0, 0)
-          dailyMap.set(d.toDateString(), 0)
-        }
-        let total = 0
-        for (const o of orders7d || []) {
-          const d = new Date(o.created_at as any)
-          d.setHours(0, 0, 0, 0)
-          const key = d.toDateString()
-          const prev = dailyMap.get(key) || 0
-          const amt = Math.round((o.amount_total || 0))
-          dailyMap.set(key, prev + amt)
-          total += amt
-        }
-        setTotalRevenue(Math.round(total) / 100)
-        const prevTotal = (ordersPrev7d || []).reduce((a, o) => a + Math.round(o.amount_total || 0), 0)
-        const growth = prevTotal > 0 ? ((total - prevTotal) / prevTotal) * 100 : 100
-        setRevenueGrowth(Math.round(growth))
-
-        const weekly: DailyRevenue[] = Array.from(dailyMap.entries()).map(([k, v]) => {
-          const date = new Date(k)
-          return { name: formatDayLabel(date), revenue: Math.round(v / 100) }
-        })
+        const res = await fetch('/api/admin/dashboard/metrics', { cache: 'no-store' })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json?.error || 'Server error')
+        setTicketsSold(json?.ticketsSold || 0)
+        setPopularSection(json?.popularSection || '-')
+        setPopularShare(json?.popularShare || 0)
+        setPromosUsed(json?.promosUsed || 0)
+        setTotalRevenue(Number(json?.totalRevenue || 0))
+        setRevenueGrowth(Number(json?.revenueGrowth || 0))
+        const daysMap: Record<string, string> = { Sun: 'Dim', Mon: 'Lun', Tue: 'Mar', Wed: 'Mer', Thu: 'Jeu', Fri: 'Ven', Sat: 'Sam' }
+        const weekly: DailyRevenue[] = (json?.weeklyRevenue || []).map((d: any) => ({ name: daysMap[d.name] || d.name, revenue: d.revenue }))
         setWeeklyRevenue(weekly)
       } catch (e) {
         toast({ variant: 'destructive', title: 'Échec du chargement', description: 'Impossible de charger les données réelles.' })
@@ -134,6 +72,36 @@ export default function DashboardPage() {
                     <TabsTrigger value="30days">30 jours</TabsTrigger>
                 </TabsList>
                 <Button onClick={handleExport}>Exporter</Button>
+                <div className="flex items-center gap-2">
+                  <Input placeholder="email de test" id="smtp-test-email" />
+                  <Button
+                    onClick={async () => {
+                      const input = document.getElementById('smtp-test-email') as HTMLInputElement | null
+                      const to = input?.value || ''
+                      if (!to) {
+                        toast({ variant: 'destructive', title: 'Adresse manquante', description: 'Renseignez un e-mail pour le test SMTP.' })
+                        return
+                      }
+                      try {
+                        const res = await fetch('/api/payments/workbench/send-test', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ to }),
+                        })
+                        const j = await res.json().catch(() => ({} as any))
+                        if (res.ok) {
+                          toast({ title: 'E-mail envoyé', description: `Vérifiez ${to}` })
+                        } else {
+                          toast({ variant: 'destructive', title: 'Échec SMTP', description: j?.error || 'Erreur inconnue' })
+                        }
+                      } catch (err: any) {
+                        toast({ variant: 'destructive', title: 'Erreur', description: err?.message || 'Échec de l’envoi SMTP' })
+                      }
+                    }}
+                  >
+                    Test SMTP
+                  </Button>
+                </div>
             </div>
         </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

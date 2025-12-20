@@ -50,28 +50,36 @@ export async function POST(request: Request) {
     const hasTickets = Array.isArray(existingTickets) && existingTickets.length > 0
 
     const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 })
-    const ticketImages: string[] = []
     const tierCounts: Record<string, number> = {}
 
     if (!hasTickets) {
+      const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
+      const site = envSite.replace(/\/+$/, '')
+      const lang = String((session.metadata as any)?.lang || 'fr')
+      const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(session.id)}`
+      const qrDataUrl = await QRCode.toDataURL(confirmUrl, { width: 256, margin: 1 })
+      let nextIdx = 1
       for (const item of items.data) {
         const quantity = item.quantity || 1
         for (let i = 0; i < quantity; i++) {
-          const payload = JSON.stringify({ orderId: session.id, product: item.description, idx: i + 1 })
-          const dataUrl = await QRCode.toDataURL(payload, { width: 256, margin: 1 })
-          ticketImages.push(dataUrl)
           await supabase.from('tickets').insert({
             order_id: session.id,
             product_name: item.description,
-            ticket_index: i + 1,
-            qr_data_url: dataUrl,
+            ticket_index: nextIdx++,
+            qr_data_url: null,
             status: 'valid',
             created_at: new Date().toISOString(),
           })
         }
         const desc = (item.description || '').toUpperCase()
         if (desc.includes('TABLE')) {
-          const tier = desc.includes('PLATINIUM') ? 'PLATINIUM' : desc.includes('PREMIUM') ? 'PREMIUM' : desc.includes('VIP') ? 'VIP' : 'OTHER'
+          const tier = desc.includes('ULTRA VIP') ? 'ULTRA VIP'
+            : desc.includes('PLATINIUM') ? 'PLATINIUM'
+            : desc.includes('VIP') ? 'VIP'
+            : desc.includes('PREMIUM') ? 'PREMIUM'
+            : desc.includes('PRESTIGE') ? 'PRESTIGE'
+            : desc.includes('STANDARD') ? 'STANDARD'
+            : 'OTHER'
           if (tier !== 'OTHER') {
             tierCounts[tier] = (tierCounts[tier] || 0) + (item.quantity || 1)
           }
@@ -80,6 +88,45 @@ export async function POST(request: Request) {
 
       for (const [tier, qty] of Object.entries(tierCounts)) {
         await supabase.rpc('increment_inventory', { p_tier: tier, p_qty: qty })
+      }
+
+      const bottlesMeta = String(((session.metadata as any)?.bottles_meta || '')).trim()
+      if (bottlesMeta) {
+        const entries = bottlesMeta.split(';').map(s => s.trim()).filter(Boolean)
+        for (const e of entries) {
+          const parts = e.split('|')
+          const seatLabel = parts[0] || ''
+          const tier = parts[1] || ''
+          if (parts.length === 3 && parts[2] === 'on_site') {
+            try {
+              await supabase.from('order_bottles').insert({
+                order_id: session.id,
+                seat_label: seatLabel,
+                tier,
+                bottle_id: null,
+                count: 0,
+                on_site: true,
+                created_at: new Date().toISOString(),
+              })
+            } catch {}
+          } else if (parts.length >= 4) {
+            const bottleId = parts[2]
+            const count = Number(parts[3] || 0)
+            if (bottleId && count > 0) {
+              try {
+                await supabase.from('order_bottles').insert({
+                  order_id: session.id,
+                  seat_label: seatLabel,
+                  tier,
+                  bottle_id: bottleId,
+                  count,
+                  on_site: false,
+                  created_at: new Date().toISOString(),
+                })
+              } catch {}
+            }
+          }
+        }
       }
 
       const promoCode = ((session.metadata as any)?.promo_code || '').toString().trim()
@@ -107,17 +154,17 @@ export async function POST(request: Request) {
       const from = process.env.EMAIL_FROM || 'noreply@garden-party.kizzyevent.com'
       const to = (session.customer_details?.email ?? session.customer_email) || ''
 
-      if (host && user && pass && to && ticketImages.length > 0) {
+      if (host && user && pass && to) {
         try {
           const transporter = nodemailer.createTransport({ host, port, secure: port === 465, auth: { user, pass } })
-          const imagesHtml = ticketImages
-            .map((src, idx) => `<div style="margin:12px 0;"><div style="font-weight:bold">Ticket ${idx + 1}</div><img src="${src}" width="180" height="180" alt="QR Ticket ${idx + 1}" /></div>`) 
-            .join('')
+          const orderLink = `${(process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com').replace(/\/+$/, '')}/${String((session.metadata as any)?.lang || 'fr')}/confirmation?session_id=${encodeURIComponent(session.id)}`
+          const imageHtml = `<div style="margin:12px 0;"><img src="${qrDataUrl}" width="180" height="180" alt="QR Réservation" /></div>`
           const html = `
             <div style="font-family:system-ui,Segoe UI,Roboto,Arial">
               <h2>Vos billets</h2>
-              <p>Merci pour votre achat. Présentez ces QR codes à l'entrée.</p>
-              ${imagesHtml}
+              <p>Merci pour votre achat. Présentez ce QR code à l'entrée.</p>
+              <p>Voir le détail de votre commande&nbsp;: <a href="${orderLink}" target="_blank" rel="noopener">${orderLink}</a></p>
+              ${imageHtml}
             </div>
           `
           await transporter.sendMail({ from, to, subject: 'Confirmation de vos billets', html })
