@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 })
       const tierCounts: Record<string, number> = {}
 
-      const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
+      const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://gardenpartyparis.com'
       const site = envSite.replace(/\/+$/, '')
       const lang = String(session.metadata?.lang || 'fr')
       const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(session.id)}`
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
               order_id: session.id,
               product_name: item.description,
               ticket_index: nextIdx++,
-              qr_data_url: null,
+              qr_data_url: qrDataUrl,
               status: 'valid',
               created_at: new Date().toISOString(),
             })
@@ -159,6 +159,8 @@ export async function POST(request: Request) {
         } catch {}
       }
 
+      await supabase.from('tickets').update({ qr_data_url: qrDataUrl }).eq('order_id', session.id)
+
       const host = process.env.SMTP_HOST
       const port = Number(process.env.SMTP_PORT || 587)
       const user = process.env.SMTP_USER
@@ -166,7 +168,7 @@ export async function POST(request: Request) {
       const from = process.env.EMAIL_FROM || 'noreply@garden-party.kizzyevent.com'
       const to = order?.email || session.customer_email || ''
 
-      if (host && user && pass && to && !hasTickets) {
+      if (host && user && pass && to) {
         const transporter = nodemailer.createTransport({
           host,
           port,

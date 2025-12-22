@@ -74,7 +74,7 @@ export default function ReservationDetailsPage() {
 
   const [order, setOrder] = React.useState<Order | null>(null);
   const [tickets, setTickets] = React.useState<TicketRow[]>([]);
-  const [items, setItems] = React.useState<Array<{ description: string; quantity: number }>>([]);
+  const [items, setItems] = React.useState<Array<{ description: string; quantity: number; unitPrice: number; subtotal: number }>>([]);
   const [bottles, setBottles] = React.useState<BottleRow[]>([]);
   const [testEmail, setTestEmail] = React.useState('')
   const [sendingTest, setSendingTest] = React.useState(false)
@@ -111,7 +111,23 @@ export default function ReservationDetailsPage() {
             const name = normalize(String(r.product_name || 'Billet'))
             grouped[name] = (grouped[name] || 0) + 1
           })
-          setItems(Object.entries(grouped).map(([description, quantity]) => ({ description, quantity })))
+          const TIER_PRICES: Record<string, number> = { 'STANDARD': 250, 'PRESTIGE': 350, 'PREMIUM': 500, 'VIP': 800, 'PLATINIUM': 1000, 'ULTRA VIP': 2000 }
+          const toUnit = (desc: string): number => {
+            const u = desc.toUpperCase()
+            if (u.startsWith('TABLE')) {
+              const m = u.match(/^TABLE\s+(ULTRA VIP|PLATINIUM|VIP|PREMIUM|PRESTIGE|STANDARD)/)
+              const tier = m?.[1] || ''
+              return TIER_PRICES[tier] ?? 0
+            }
+            if (u.includes('ENTRÉE FEMME') || u.includes('ENTREE FEMME')) return 50
+            if (u.includes('ENTRÉE HOMME') || u.includes('ENTREE HOMME')) return 80
+            return 0
+          }
+          setItems(Object.entries(grouped).map(([description, quantity]) => {
+            const unitPrice = toUnit(description)
+            const subtotal = unitPrice * quantity
+            return { description, quantity, unitPrice, subtotal }
+          }))
           const rawBottles = Array.isArray(json?.bottles) ? (json.bottles as any) : []
           const sortedBottles = [...rawBottles].sort((a, b) => {
             const la = String(a.seat_label || '')
@@ -156,7 +172,23 @@ export default function ReservationDetailsPage() {
           const name = normalize(String(r.product_name || 'Billet'));
           grouped[name] = (grouped[name] || 0) + 1;
         });
-        setItems(Object.entries(grouped).map(([description, quantity]) => ({ description, quantity })));
+        const TIER_PRICES: Record<string, number> = { 'STANDARD': 250, 'PRESTIGE': 350, 'PREMIUM': 500, 'VIP': 800, 'PLATINIUM': 1000, 'ULTRA VIP': 2000 }
+        const toUnit = (desc: string): number => {
+          const u = desc.toUpperCase()
+          if (u.startsWith('TABLE')) {
+            const m = u.match(/^TABLE\s+(ULTRA VIP|PLATINIUM|VIP|PREMIUM|PRESTIGE|STANDARD)/)
+            const tier = m?.[1] || ''
+            return TIER_PRICES[tier] ?? 0
+          }
+          if (u.includes('ENTRÉE FEMME') || u.includes('ENTREE FEMME')) return 50
+          if (u.includes('ENTRÉE HOMME') || u.includes('ENTREE HOMME')) return 80
+          return 0
+        }
+        setItems(Object.entries(grouped).map(([description, quantity]) => {
+          const unitPrice = toUnit(description)
+          const subtotal = unitPrice * quantity
+          return { description, quantity, unitPrice, subtotal }
+        }));
         const { data: bottleRows } = await supabase.from('order_bottles').select('seat_label,tier,bottle_id,count,on_site').eq('order_id', id)
         const rawBottles = Array.isArray(bottleRows) ? (bottleRows as any) : []
         const sortedBottles = [...rawBottles].sort((a, b) => {
@@ -280,7 +312,7 @@ export default function ReservationDetailsPage() {
                     <TableRow key={`${item.description}-${idx}`}>
                       <TableCell className="font-medium">{item.description}</TableCell>
                       <TableCell className="text-center">{item.quantity}</TableCell>
-                      <TableCell className="text-right">-</TableCell>
+                      <TableCell className="text-right">{item.subtotal > 0 ? `${item.subtotal} €` : '-'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

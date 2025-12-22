@@ -51,13 +51,13 @@ export async function POST(request: Request) {
 
     const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 })
     const tierCounts: Record<string, number> = {}
+    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://gardenpartyparis.com'
+    const site = envSite.replace(/\/+$/, '')
+    const lang = String((session.metadata as any)?.lang || 'fr')
+    const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(session.id)}`
+    const qrDataUrl = await QRCode.toDataURL(confirmUrl, { width: 256, margin: 1 })
 
     if (!hasTickets) {
-      const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
-      const site = envSite.replace(/\/+$/, '')
-      const lang = String((session.metadata as any)?.lang || 'fr')
-      const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(session.id)}`
-      const qrDataUrl = await QRCode.toDataURL(confirmUrl, { width: 256, margin: 1 })
       let nextIdx = 1
       for (const item of items.data) {
         const quantity = item.quantity || 1
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
             order_id: session.id,
             product_name: item.description,
             ticket_index: nextIdx++,
-            qr_data_url: null,
+            qr_data_url: qrDataUrl,
             status: 'valid',
             created_at: new Date().toISOString(),
           })
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
       if (host && user && pass && to) {
         try {
           const transporter = nodemailer.createTransport({ host, port, secure: port === 465, auth: { user, pass } })
-          const orderLink = `${(process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com').replace(/\/+$/, '')}/${String((session.metadata as any)?.lang || 'fr')}/confirmation?session_id=${encodeURIComponent(session.id)}`
+          const orderLink = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(session.id)}`
           const imageHtml = `<div style="margin:12px 0;"><img src="${qrDataUrl}" width="180" height="180" alt="QR Réservation" /></div>`
           const html = `
             <div style="font-family:system-ui,Segoe UI,Roboto,Arial">
@@ -172,6 +172,7 @@ export async function POST(request: Request) {
       }
     }
 
+    await supabase.from('tickets').update({ qr_data_url: qrDataUrl }).eq('order_id', session.id)
     return NextResponse.json({ ok: true, created, tickets_created: !hasTickets })
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? 'Reconcile failed' }, { status: 500 })

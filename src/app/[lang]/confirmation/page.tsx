@@ -74,6 +74,7 @@ function ConfirmationPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [reconciling, setReconciling] = useState(false);
   const [qrUrl, setQrUrl] = useState<string>('');
+  const [bottles, setBottles] = useState<Array<{ seat_label: string; tier: string | null; bottle_id: string | null; count: number; on_site: boolean }>>([]);
 
   const totalPaid = useMemo(() => {
     const cents = order?.amount_total || 0;
@@ -89,14 +90,18 @@ function ConfirmationPageContent() {
         if (!sessionId) {
           setOrder(null);
           setTickets([]);
+          setBottles([]);
           return;
         }
-        const supabase = getSupabaseBrowser();
-        const { data: orderRow } = await supabase.from('orders').select('*').eq('id', sessionId).single();
-        const { data: ticketRows } = await supabase.from('tickets').select('order_id, product_name, ticket_index, qr_data_url').eq('order_id', sessionId).order('ticket_index', { ascending: true });
+        const res = await fetch(`/api/admin/orders/${encodeURIComponent(sessionId)}`, { cache: 'no-store' })
+        const json = await res.json().catch(() => ({} as any))
+        const orderRow = res.ok ? (json?.order || null) : null
+        const ticketRows = res.ok ? (Array.isArray(json?.tickets) ? json.tickets : []) : []
+        const bottleRows = res.ok ? (Array.isArray(json?.bottles) ? json.bottles : []) : []
         if (!cancelled) {
           setOrder(orderRow || null);
           setTickets(ticketRows || []);
+          setBottles(bottleRows || []);
         }
       } catch (e: any) {
         if (!cancelled) setError(e?.message || 'Erreur inattendue');
@@ -128,6 +133,25 @@ function ConfirmationPageContent() {
 
   useEffect(() => {
     let cancelled = false
+    async function loadBottles() {
+      if (!sessionId) return
+      try {
+        const supabase = getSupabaseBrowser();
+        const { data } = await supabase
+          .from('order_bottles')
+          .select('seat_label,tier,bottle_id,count,on_site')
+          .eq('order_id', sessionId)
+        if (!cancelled) {
+          setBottles(Array.isArray(data) ? data : [])
+        }
+      } catch {}
+    }
+    loadBottles()
+    return () => { cancelled = true }
+  }, [sessionId])
+
+  useEffect(() => {
+    let cancelled = false
     async function reconcile() {
       if (!sessionId || loading || order || reconciling) return
       try {
@@ -138,12 +162,15 @@ function ConfirmationPageContent() {
           body: JSON.stringify({ session_id: sessionId }),
         })
         if (cancelled) return
-        const supabase = getSupabaseBrowser();
-        const { data: orderRow } = await supabase.from('orders').select('*').eq('id', sessionId).single();
-        const { data: ticketRows } = await supabase.from('tickets').select('order_id, product_name, ticket_index, qr_data_url').eq('order_id', sessionId).order('ticket_index', { ascending: true });
+        const res = await fetch(`/api/admin/orders/${encodeURIComponent(sessionId)}`, { cache: 'no-store' })
+        const json = await res.json().catch(() => ({} as any))
+        const orderRow = res.ok ? (json?.order || null) : null
+        const ticketRows = res.ok ? (Array.isArray(json?.tickets) ? json.tickets : []) : []
+        const bottleRows = res.ok ? (Array.isArray(json?.bottles) ? json.bottles : []) : []
         if (!cancelled) {
           setOrder(orderRow || null)
           setTickets(ticketRows || [])
+          setBottles(bottleRows || [])
         }
       } catch {}
       finally {
@@ -162,6 +189,85 @@ function ConfirmationPageContent() {
       }
     } catch {}
   }, [order])
+
+  const labels = useMemo(() => {
+    return lang === 'en'
+      ? { entries: 'Entries', women: "Women’s Entries", men: "Men’s Entries", tables: 'Tables', bottles: 'Bottles', onSite: 'On site' }
+      : { entries: 'Entrées', women: 'Entrées Femmes', men: 'Entrées Hommes', tables: 'Tables', bottles: 'Bouteilles', onSite: 'Sur place' }
+  }, [lang])
+
+  const parsedSummary = useMemo(() => {
+    const men = tickets.filter(t => String(t.product_name || '').toUpperCase().includes('ENTRÉE HOMME') || String(t.product_name || '').toUpperCase().includes('ENTREE HOMME')).length
+    const women = tickets.filter(t => String(t.product_name || '').toUpperCase().includes('ENTRÉE FEMME') || String(t.product_name || '').toUpperCase().includes('ENTREE FEMME')).length
+    const tables: Record<string, string[]> = {}
+    for (const t of tickets) {
+      const name = String(t.product_name || '')
+      if (name.toUpperCase().startsWith('TABLE')) {
+        const m = name.match(/^Table\s+(.+?)\s*-\s*(.+)$/i)
+        if (m) {
+          const tier = m[1].toUpperCase()
+          const label = m[2]
+          const arr = tables[tier] || []
+          if (!arr.includes(label)) arr.push(label)
+          tables[tier] = arr
+        } else {
+          const arr = tables['TABLE'] || []
+          arr.push(name)
+          tables['TABLE'] = arr
+        }
+      }
+    }
+    return { men, women, tables }
+  }, [tickets])
+
+  const BOTTLE_NAMES: Record<string, string> = {
+    'vodka-70': lang === 'en' ? 'Vodka 70 cl (Grey Goose)' : 'Vodka 70 cl (Grey Goose)',
+    'vodka-magnum-15': lang === 'en' ? 'Magnum Vodka 1.5 l (Grey Goose)' : 'Magnum Vodka 1,5 l (Grey Goose)',
+    'whisky-70': lang === 'en' ? 'Whisky 70 cl (Jack Daniels)' : 'Whiskies 70 cl (Jack Daniels)',
+    'whisky-15': lang === 'en' ? 'Whisky 1.5 l (Jack Daniels)' : 'Whiskies 1,5 l (Jack Daniels)',
+    'rhum-ambre-70': lang === 'en' ? 'Amber Rum 70 cl (Trois Rivières)' : 'Rhum Ambré 70 cl (Trois Rivières Ambre)',
+    'champagne-moet-70': lang === 'en' ? 'Champagne 70 cl (Moët & Chandon)' : 'Champagne 70 cl (Moët & Chandon)',
+    'champagne-veuve-70': lang === 'en' ? 'Champagne 70 cl (Veuve Clicquot)' : 'Champagne 70 cl (Veuve Clicquot)',
+    'champagne-ruinart-70': lang === 'en' ? 'Champagne 70 cl (Ruinart B.B)' : 'Champagne 70 cl (Ruinart B.B)',
+    'champagne-belaire-70': lang === 'en' ? 'Champagne 70 cl (Belaire B.B)' : 'Champagne 70 cl (Belaire B.B)',
+    'champagne-asgarnier-70': lang === 'en' ? 'Champagne 70 cl (AS Garnier)' : 'Champagne 70 cl (AS Garnier)',
+    'prosecco-70': lang === 'en' ? 'Sparkling Wine 70 cl (Prosecco)' : 'Vin Pétillant 70 cl (Prosecco)',
+    'magnum-mocktail': lang === 'en' ? 'Magnum non-alcoholic (Sex On the Beach)' : 'Magnum sans alcool (Sex On the Beach)',
+  }
+
+  const TIER_PRICES: Record<string, number> = {
+    'STANDARD': 250,
+    'PRESTIGE': 350,
+    'PREMIUM': 500,
+    'VIP': 800,
+    'PLATINIUM': 1000,
+    'ULTRA VIP': 2000,
+  }
+  const ENTRY_PRICES = { women: 50, men: 80 }
+  const itemized = useMemo(() => {
+    const tables: Array<{ tier: string; label: string; price: number }> = []
+    for (const [tier, labelsList] of Object.entries(parsedSummary.tables)) {
+      const price = TIER_PRICES[tier] ?? 0
+      for (const label of labelsList) {
+        tables.push({ tier, label, price })
+      }
+    }
+    const entries: Array<{ kind: 'women' | 'men'; count: number; unit: number; subtotal: number }> = []
+    if (parsedSummary.women > 0) {
+      const unit = ENTRY_PRICES.women
+      entries.push({ kind: 'women', count: parsedSummary.women, unit, subtotal: unit * parsedSummary.women })
+    }
+    if (parsedSummary.men > 0) {
+      const unit = ENTRY_PRICES.men
+      entries.push({ kind: 'men', count: parsedSummary.men, unit, subtotal: unit * parsedSummary.men })
+    }
+    const tablesSubtotal = tables.reduce((s, t) => s + t.price, 0)
+    const entriesSubtotal = entries.reduce((s, e) => s + e.subtotal, 0)
+    const grandSubtotal = tablesSubtotal + entriesSubtotal
+    const paid = Number(order?.amount_total || 0) / 100
+    const delta = Math.max(0, grandSubtotal - paid)
+    return { tables, entries, tablesSubtotal, entriesSubtotal, grandSubtotal, paid, delta }
+  }, [parsedSummary, order])
 
   if (!sessionId || (!loading && !order)) {
     return (
@@ -200,7 +306,30 @@ function ConfirmationPageContent() {
                 <div>
                   <p><strong>{pageContent.orderId}:</strong> {order?.id}</p>
                   <p><strong>{pageContent.date}:</strong> {order?.created_at ? new Date(order.created_at).toLocaleString(lang) : '-'}</p>
-                  <p><strong>{pageContent.tickets}:</strong> {tickets.length > 0 ? tickets.map(t => t.product_name).join(', ') : '-'}</p>
+                  <div className="space-y-1">
+                    <p><strong>{labels.entries}:</strong> {parsedSummary.women + parsedSummary.men > 0 ? `${labels.women}: ${parsedSummary.women} · ${labels.men}: ${parsedSummary.men}` : '-'}</p>
+                    <p>
+                      <strong>{labels.tables}:</strong>{' '}
+                      {Object.keys(parsedSummary.tables).length > 0
+                        ? Object.entries(parsedSummary.tables)
+                            .map(([tier, labelsList]) => `${tier}: ${labelsList.join(', ')}`)
+                            .join(' · ')
+                        : '-'}
+                    </p>
+                    <p>
+                      <strong>{labels.bottles}:</strong>{' '}
+                      {bottles.length > 0
+                        ? bottles
+                            .map(b => {
+                              const name = b.on_site ? labels.onSite : (BOTTLE_NAMES[String(b.bottle_id || '')] || String(b.bottle_id || ''))
+                              const seat = b.seat_label ? `${String(b.tier || '').toUpperCase()} - ${b.seat_label}` : ''
+                              const qty = Number(b.count || 0) > 0 && !b.on_site ? ` x ${Number(b.count || 0)}` : ''
+                              return seat ? `${seat}: ${name}${qty}` : `${name}${qty}`
+                            })
+                            .join(' · ')
+                        : '-'}
+                    </p>
+                  </div>
                   <p><strong>{pageContent.totalPaid}:</strong> {totalPaid} €</p>
                 </div>
                 <div className="flex flex-col items-center gap-1">
@@ -212,6 +341,33 @@ function ConfirmationPageContent() {
                   )}
                   <span className="text-xs text-muted-foreground">{pageContent.scanAtEntry}</span>
                 </div>
+              </div>
+            </div>
+            <div className="p-4 bg-secondary/50 rounded-lg space-y-2">
+              <h4 className="font-semibold">{lang === 'en' ? 'Itemized totals' : 'Détail des prix par item'}</h4>
+              <div className="space-y-1">
+                {itemized.tables.length > 0 && (
+                  <div>
+                    <p className="mb-1"><strong>{lang === 'en' ? 'Tables' : 'Tables'}:</strong></p>
+                    {itemized.tables.map((t, i) => (
+                      <p key={`t-${t.tier}-${t.label}-${i}`} className="text-sm">{`Table ${t.tier} - ${t.label}: ${t.price} €`}</p>
+                    ))}
+                    <p className="mt-1 text-sm"><strong>{lang === 'en' ? 'Tables subtotal' : 'Sous-total tables'}:</strong> {itemized.tablesSubtotal} €</p>
+                  </div>
+                )}
+                {itemized.entries.length > 0 && (
+                  <div className="mt-2">
+                    <p className="mb-1"><strong>{labels.entries}:</strong></p>
+                    {itemized.entries.map((e, i) => (
+                      <p key={`e-${e.kind}-${i}`} className="text-sm">
+                        {`${e.kind === 'women' ? (lang === 'en' ? "Women's Entries" : 'Entrées Femmes') : (lang === 'en' ? "Men's Entries" : 'Entrées Hommes')} × ${e.count}: ${e.unit} € → ${e.subtotal} €`}
+                      </p>
+                    ))}
+                    <p className="mt-1 text-sm"><strong>{lang === 'en' ? 'Entries subtotal' : 'Sous-total entrées'}:</strong> {itemized.entriesSubtotal} €</p>
+                  </div>
+                )}
+                <p className="mt-2 text-sm"><strong>{lang === 'en' ? 'Subtotal' : 'Sous-total'}:</strong> {itemized.grandSubtotal} €</p>
+                <p className="text-sm"><strong>{pageContent.totalPaid}:</strong> {itemized.paid.toFixed(2)} €</p>
               </div>
             </div>
             {error && <div className="text-destructive text-sm">{error}</div>}
