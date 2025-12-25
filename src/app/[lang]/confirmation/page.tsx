@@ -302,8 +302,8 @@ function ConfirmationPageContent() {
           <div className="text-left space-y-4">
             <h3 className="font-semibold font-headline text-lg">{pageContent.summaryTitle}</h3>
             <div className="p-4 bg-secondary/50 rounded-lg space-y-2">
-              <div className="flex justify-between items-center">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto] gap-4 sm:gap-6 items-start">
+                <div className="break-words">
                   <p><strong>{pageContent.orderId}:</strong> {order?.id}</p>
                   <p><strong>{pageContent.date}:</strong> {order?.created_at ? new Date(order.created_at).toLocaleString(lang) : '-'}</p>
                   <div className="space-y-1">
@@ -332,12 +332,12 @@ function ConfirmationPageContent() {
                   </div>
                   <p><strong>{pageContent.totalPaid}:</strong> {totalPaid} €</p>
                 </div>
-                <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center gap-1 sm:self-start">
                   {qrUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={qrUrl} alt="QR" className="w-20 h-20 object-contain bg-white border rounded" />
+                    <img src={qrUrl} alt="QR" className="w-20 h-20 sm:w-24 sm:h-24 object-contain bg-white border rounded" />
                   ) : (
-                    <div className="w-20 h-20 bg-white border rounded" />
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white border rounded" />
                   )}
                   <span className="text-xs text-muted-foreground">{pageContent.scanAtEntry}</span>
                 </div>

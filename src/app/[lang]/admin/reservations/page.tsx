@@ -116,7 +116,6 @@ export default function ReservationsPage() {
               <TableRow>
                 <TableHead>ID Commande</TableHead>
                 <TableHead>Client</TableHead>
-                <TableHead>Événement</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead className="text-right">Montant</TableHead>
@@ -126,13 +125,12 @@ export default function ReservationsPage() {
             <TableBody>
               {currentOrders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-muted-foreground">Aucune réservation</TableCell>
+                  <TableCell colSpan={6} className="text-muted-foreground">Aucune réservation</TableCell>
                 </TableRow>
               ) : currentOrders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">{order.id}</TableCell>
                   <TableCell>{order.name || order.email || '-'}</TableCell>
-                  <TableCell>-</TableCell>
                   <TableCell>{formatDate(order.created_at)}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(order.status) as any}>
