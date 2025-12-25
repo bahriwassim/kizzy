@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
+    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3600'
     const site = envSite.replace(/\/+$/, '')
     const successUrl = `${site}/${lang}/confirmation?session_id={CHECKOUT_SESSION_ID}`
     const cancelUrl = `${site}/${lang}/checkout`

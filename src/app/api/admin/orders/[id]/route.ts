@@ -43,7 +43,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       }
       if (!Array.isArray(tickets) || tickets.length === 0) {
         const items = await stripe.checkout.sessions.listLineItems(id, { limit: 100 })
-        const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
+        const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3600'
         const site = envSite.replace(/\/+$/, '')
         const lang = String(session.metadata?.lang || 'fr')
         const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(id)}`

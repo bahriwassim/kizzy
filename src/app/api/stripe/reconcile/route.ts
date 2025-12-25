@@ -51,7 +51,7 @@ export async function POST(request: Request) {
 
     const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 })
     const tierCounts: Record<string, number> = {}
-    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://gardenpartyparis.com'
+    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3600'
     const site = envSite.replace(/\/+$/, '')
     const lang = String((session.metadata as any)?.lang || 'fr')
     const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(session.id)}`

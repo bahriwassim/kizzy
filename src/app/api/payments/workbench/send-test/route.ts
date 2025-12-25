@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const user = process.env.SMTP_USER
     const pass = process.env.SMTP_PASS
     const from = process.env.EMAIL_FROM || 'noreply@garden-party.kizzyevent.com'
-    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
+    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3600'
     const site = envSite.replace(/\/+$/, '')
     const url = `${site}/${lang}/confirmation?session_id=TEST`
     const dataUrl = await QRCode.toDataURL(url, { width: 256, margin: 1 })

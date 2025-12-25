@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       .order('ticket_index', { ascending: true })
     const count = Array.isArray(tickets) && tickets.length > 0 ? tickets.length : 1
 
-    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://gardenpartyparis.com'
+    const envSite = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3600'
     const site = envSite.replace(/\/+$/, '')
     const confirmUrl = `${site}/${lang}/confirmation?session_id=${encodeURIComponent(order_id)}`
     const qrDataUrl = await QRCode.toDataURL(confirmUrl, { width: 256, margin: 1 })
