@@ -7,6 +7,7 @@ import { i18n } from '@/i18n-config';
 import { Playfair_Display, Montserrat } from 'next/font/google';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
+import { TikTokPixel } from '@/components/analytics/tiktok-pixel';
 import { CookieConsent } from '@/components/ui/cookie-consent';
 
 const playfair = Playfair_Display({
@@ -68,6 +69,7 @@ export default function RootLayout({
         </div>
         <CookieConsent lang={(params.lang as 'fr' | 'en') ?? 'fr'} />
         <MetaPixel />
+        <TikTokPixel />
         <Toaster />
       </body>
     </html>

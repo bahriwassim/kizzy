@@ -7,7 +7,6 @@ import { type Locale } from '@/i18n-config';
 import { HomePopular } from '@/components/layout/home-popular';
 import { ArrowRight, Instagram } from 'lucide-react';
 import { HeroVideo } from '@/components/layout/hero-video';
-import { headers } from 'next/headers'
 
 type SoireeConfig = {
   hero: { title: string; subtitle: string; videoId: string }
@@ -26,10 +25,7 @@ type SoireeConfig = {
 
 export default async function Home({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
-  const h = await headers()
-  const host = h.get('host') ?? 'localhost:3600'
-  const proto = h.get('x-forwarded-proto') ?? 'http'
-  const base = `${proto}://${host}`
+  const base = (process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3600').replace(/\/+$/, '')
   const res = await fetch(`${base}/api/soiree?lang=${lang}`, { cache: 'no-store' })
   const cfg: SoireeConfig = await res.json()
 
