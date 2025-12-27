@@ -17,6 +17,9 @@ const content = {
     description: "Vos billets pour Golden Paris NYE 2026 sont confirmés.",
     emailConfirmation: "Un e-mail de confirmation avec vos e-billets a été envoyé à votre adresse e-mail.",
     summaryTitle: "Résumé de la réservation",
+    clientName: "Nom",
+    clientEmail: "Email",
+    clientPhone: "Téléphone",
     orderId: "ID de commande",
     date: "Date",
     tickets: "Billets",
@@ -32,6 +35,9 @@ const content = {
     description: "Your tickets for Golden Paris NYE 2026 are confirmed.",
     emailConfirmation: "A confirmation email with your e‑tickets has been sent to your email.",
     summaryTitle: "Booking Summary",
+    clientName: "Name",
+    clientEmail: "Email",
+    clientPhone: "Phone",
     orderId: "Order ID",
     date: "Date",
     tickets: "Tickets",
@@ -306,6 +312,9 @@ function ConfirmationPageContent() {
                 <div className="break-words">
                   <p><strong>{pageContent.orderId}:</strong> {order?.id}</p>
                   <p><strong>{pageContent.date}:</strong> {order?.created_at ? new Date(order.created_at).toLocaleString(lang) : '-'}</p>
+                  <p><strong>{pageContent.clientName}:</strong> {order?.name || '-'}</p>
+                  <p><strong>{pageContent.clientEmail}:</strong> {order?.email || '-'}</p>
+                  <p><strong>{pageContent.clientPhone}:</strong> {order?.phone || '-'}</p>
                   <div className="space-y-1">
                     <p><strong>{labels.entries}:</strong> {parsedSummary.women + parsedSummary.men > 0 ? `${labels.women}: ${parsedSummary.women} · ${labels.men}: ${parsedSummary.men}` : '-'}</p>
                     <p>

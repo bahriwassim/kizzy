@@ -40,6 +40,28 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         await supabase.from('orders').upsert(payload)
         const { data: refreshedOrder } = await supabase.from('orders').select('*').eq('id', id).single()
         order = refreshedOrder || order
+      } else {
+        const needsUpdate =
+          !order.amount_total ||
+          !order.currency ||
+          !order.email ||
+          !order.name ||
+          !order.phone ||
+          (order.status !== 'paid' && (session.payment_status === 'paid' || session.status === 'complete'))
+        if (needsUpdate) {
+          const updatePayload: any = {}
+          if (!order.amount_total && session.amount_total) updatePayload.amount_total = session.amount_total
+          if (!order.currency && session.currency) updatePayload.currency = session.currency
+          if (!order.email && (session.customer_details?.email ?? session.customer_email)) updatePayload.email = (session.customer_details?.email ?? session.customer_email)
+          if (!order.name && (session.metadata?.customer_name ?? session.customer_details?.name)) updatePayload.name = (session.metadata?.customer_name ?? session.customer_details?.name ?? null)
+          if (!order.phone && (session.metadata?.customer_phone ?? session.customer_details?.phone)) updatePayload.phone = (session.metadata?.customer_phone ?? session.customer_details?.phone ?? null)
+          if (order.status !== 'paid' && (session.payment_status === 'paid' || session.status === 'complete')) updatePayload.status = 'paid'
+          if (Object.keys(updatePayload).length > 0) {
+            await supabase.from('orders').update(updatePayload).eq('id', id)
+            const { data: refreshedOrder } = await supabase.from('orders').select('*').eq('id', id).single()
+            order = refreshedOrder || order
+          }
+        }
       }
       if (!Array.isArray(tickets) || tickets.length === 0) {
         const items = await stripe.checkout.sessions.listLineItems(id, { limit: 100 })
