@@ -42,7 +42,7 @@ export function HomePopular({ lang }: { lang: Locale }) {
             {artists.map((name, i) => (
               <span
                 key={`a-${i}`}
-                className="mx-8 text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground/90"
+                className="mx-8 text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-[#ff0033] drop-shadow-[0_0_8px_#ff0044]"
                 style={{ fontFamily: 'Monument Extended, var(--font-body)' }}
               >
                 {name}
@@ -51,7 +51,7 @@ export function HomePopular({ lang }: { lang: Locale }) {
             {artists.map((name, i) => (
               <span
                 key={`b-${i}`}
-                className="mx-8 text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground/90"
+                className="mx-8 text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-[#ff0033] drop-shadow-[0_0_8px_#ff0044]"
                 style={{ fontFamily: 'Monument Extended, var(--font-body)' }}
               >
                 {name}
