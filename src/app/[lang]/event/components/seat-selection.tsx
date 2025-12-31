@@ -38,8 +38,8 @@ const tierColors: Record<SeatTier, string> = {
 const generateSeats = (): Seat[] => {
   const seats: Seat[] = [];
   const sections: { tier: SeatTier; price: number; capacity: number; labels: string[], unavailable?: string[] }[] = [
-    { tier: 'STANDARD', price: 250, capacity: 2, labels: ['103', '104'], unavailable: ['103', '104'] },
-    { tier: 'PRESTIGE', price: 350, capacity: 3, labels: ['105', '106'], unavailable: ['105', '106'] },
+    { tier: 'STANDARD', price: 250, capacity: 2, labels: Array.from({ length: 20 }, (_, i) => String(103 + i)) },
+    { tier: 'PRESTIGE', price: 350, capacity: 3, labels: Array.from({ length: 20 }, (_, i) => String(123 + i)) },
     { tier: 'ULTRA VIP', price: 2000, capacity: 5, labels: ['14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25'], unavailable: ['14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25'] },
     { tier: 'PLATINIUM', price: 1000, capacity: 4, labels: ['6', '7', '8', '9', '10', '11', '12', '13', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '1', '2', '3', '4', '5', '37', '38', '39', '40'] },
     { tier: 'VIP', price: 800, capacity: 4, labels: ['41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73'] },
